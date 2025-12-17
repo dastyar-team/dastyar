@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>DOI Helper</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div class="brand">
+          <div class="logo">DOI</div>
+          <div class="title">
+            <div class="name">DOI Helper</div>
+            <div class="subtitle">Open Access assistant</div>
+          </div>
+        </div>
+        <button id="btnLogout" class="ghost hidden" title="Log out">Log out</button>
+      </header>
+
+      <main>
+        <section id="viewWelcome" class="card">
+          <div class="h1">Login</div>
+          <div class="muted">
+            Sign in with the email &amp; code you saved in the Telegram bot.
+          </div>
+          <div class="spacer"></div>
+          <button id="btnShowLogin" class="primary">Sign in</button>
+        </section>
+
+        <section id="viewLogin" class="card hidden">
+          <div class="h1">Sign in</div>
+          <div class="muted">Enter your email and 6‑character code.</div>
+          <div class="spacer"></div>
+
+          <label class="label">Email</label>
+          <input id="email" class="input" type="email" placeholder="user@example.com" autocomplete="email" />
+
+          <label class="label">Code</label>
+          <input id="code" class="input" type="password" placeholder="12A345" autocomplete="current-password" />
+          <div class="hint">6 chars: exactly 5 digits + 1 English letter (e.g. 12A345)</div>
+
+          <div class="row">
+            <button id="btnLogin" class="primary">Login</button>
+            <button id="btnBack" class="ghost">Back</button>
+          </div>
+          <div id="loginError" class="error hidden"></div>
+        </section>
+
+        <section id="viewDash" class="card hidden">
+          <div class="h1">Dashboard</div>
+
+          <div class="line">
+            <div class="k">Account</div>
+            <div id="accountStatus" class="pill">—</div>
+          </div>
+          <div class="line">
+            <div class="k">AI</div>
+            <div id="aiStatus" class="pill">—</div>
+          </div>
+
+          <div class="line">
+            <div class="k">Proxy</div>
+            <button id="proxyToggle" class="toggle" aria-pressed="false">Off</button>
+          </div>
+          <div class="hint">Proxy toggle is a placeholder (will be wired later).</div>
+
+          <div class="divider"></div>
+
+          <div class="h2">Usage</div>
+          <div class="grid2">
+            <div class="stat">
+              <div class="k">Free used</div>
+              <div id="freeUsed" class="v">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Free remaining</div>
+              <div id="freeRemain" class="v">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Paid used</div>
+              <div id="paidUsed" class="v">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Paid remaining</div>
+              <div id="paidRemain" class="v">—</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="h2">Current page</div>
+          <div id="doiBox" class="doiBox">
+            <div class="doiTop">
+              <div id="doiPill" class="pill">No DOI</div>
+              <button id="btnRefresh" class="ghost small">Refresh</button>
+            </div>
+            <div id="doiText" class="doiText">—</div>
+            <div id="doiMsg" class="muted small">Open a paper page to detect DOI.</div>
+            <div class="row">
+              <button id="btnSend" class="primary" disabled>Send to bot</button>
+              <button id="btnOpenDoi" class="ghost" disabled>Open DOI</button>
+            </div>
+            <div id="sendError" class="error hidden"></div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span class="muted small">API:</span>
+        <input id="apiBase" class="input small" type="text" placeholder="http://127.0.0.1:8787" />
+        <button id="btnSaveApi" class="ghost small">Save</button>
+      </footer>
+    </div>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
+

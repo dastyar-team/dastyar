@@ -1,0 +1,1214 @@
+flag provided but not defined: -config
+A unified platform for anti-censorship.
+
+Usage:
+
+	v2ray <command> [arguments]
+
+The commands are:
+
+	run           run V2Ray with config
+	api           call V2Ray API
+	convert       convert config files
+	test          test config files
+	tls           TLS tools
+	uuid          generate new UUID
+	verify        verify if a binary is officially signed
+	version       print V2Ray version
+
+Use "v2ray help <command>" for more information about a command.
+
+Additional help topics:
+
+	config-merge  config merge logic
+	format-loader config formats and loading
+
+Use "v2ray help <topic>" for more information about that topic.
+
+flag provided but not defined: -config
+A unified platform for anti-censorship.
+
+Usage:
+
+	v2ray <command> [arguments]
+
+The commands are:
+
+	run           run V2Ray with config
+	api           call V2Ray API
+	convert       convert config files
+	test          test config files
+	tls           TLS tools
+	uuid          generate new UUID
+	verify        verify if a binary is officially signed
+	version       print V2Ray version
+
+Use "v2ray help <command>" for more information about a command.
+
+Additional help topics:
+
+	config-merge  config merge logic
+	format-loader config formats and loading
+
+Use "v2ray help <topic>" for more information about that topic.
+
+flag provided but not defined: -config
+A unified platform for anti-censorship.
+
+Usage:
+
+	v2ray <command> [arguments]
+
+The commands are:
+
+	run           run V2Ray with config
+	api           call V2Ray API
+	convert       convert config files
+	test          test config files
+	tls           TLS tools
+	uuid          generate new UUID
+	verify        verify if a binary is officially signed
+	version       print V2Ray version
+
+Use "v2ray help <command>" for more information about a command.
+
+Additional help topics:
+
+	config-merge  config merge logic
+	format-loader config formats and loading
+
+Use "v2ray help <topic>" for more information about that topic.
+
+flag provided but not defined: -config
+A unified platform for anti-censorship.
+
+Usage:
+
+	v2ray <command> [arguments]
+
+The commands are:
+
+	run           run V2Ray with config
+	api           call V2Ray API
+	convert       convert config files
+	test          test config files
+	tls           TLS tools
+	uuid          generate new UUID
+	verify        verify if a binary is officially signed
+	version       print V2Ray version
+
+Use "v2ray help <command>" for more information about a command.
+
+Additional help topics:
+
+	config-merge  config merge logic
+	format-loader config formats and loading
+
+Use "v2ray help <topic>" for more information about that topic.
+
+flag provided but not defined: -config
+A unified platform for anti-censorship.
+
+Usage:
+
+	v2ray <command> [arguments]
+
+The commands are:
+
+	run           run V2Ray with config
+	api           call V2Ray API
+	convert       convert config files
+	test          test config files
+	tls           TLS tools
+	uuid          generate new UUID
+	verify        verify if a binary is officially signed
+	version       print V2Ray version
+
+Use "v2ray help <command>" for more information about a command.
+
+Additional help topics:
+
+	config-merge  config merge logic
+	format-loader config formats and loading
+
+Use "v2ray help <topic>" for more information about that topic.
+
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/11/27 21:58:27 [Warning] V2Ray 5.41.0 started
+2025/11/27 21:58:27 tcp:127.0.0.1:51394 rejected  proxy/socks: insufficient header > EOF
+2025/11/27 21:58:27 [Warning] [4115897247] app/dispatcher: default route for tcp:1.1.1.1:443
+2025/11/27 21:58:27 tcp:127.0.0.1:51395 accepted tcp:1.1.1.1:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/11/27 21:58:28 [Warning] V2Ray 5.41.0 started
+2025/11/27 21:58:28 tcp:127.0.0.1:51400 rejected  proxy/socks: insufficient header > EOF
+2025/11/27 21:58:28 [Warning] [1257962017] app/dispatcher: default route for tcp:1.1.1.1:443
+2025/11/27 21:58:28 tcp:127.0.0.1:51401 accepted tcp:1.1.1.1:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/11/27 21:59:41 [Warning] V2Ray 5.41.0 started
+2025/11/27 21:59:42 tcp:127.0.0.1:51562 rejected  proxy/socks: insufficient header > EOF
+2025/11/27 21:59:53 tcp:127.0.0.1:51597 accepted tcp:clients2.google.com:80
+2025/11/27 21:59:53 [Warning] [772525207] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/11/27 21:59:54 tcp:127.0.0.1:51600 rejected  proxy/socks: failed to read request > read tcp 127.0.0.1:21870->127.0.0.1:51600: read: connection reset by peer
+2025/11/27 21:59:54 tcp:127.0.0.1:51601 rejected  proxy/socks: insufficient header > EOF
+2025/11/27 21:59:54 [Warning] [3790140424] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/27 21:59:54 tcp:127.0.0.1:51602 accepted tcp:accounts.google.com:443
+2025/11/27 21:59:54 [Warning] [3676022870] app/dispatcher: default route for tcp:www.google.com:443
+2025/11/27 21:59:54 tcp:127.0.0.1:51603 accepted tcp:www.google.com:443
+2025/11/27 21:59:54 [Warning] [2305439057] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 21:59:54 tcp:127.0.0.1:51606 accepted tcp:iranpaper.ir:443
+2025/11/27 21:59:54 [Warning] [769177376] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 21:59:54 tcp:127.0.0.1:51608 accepted tcp:iranpaper.ir:443
+2025/11/27 21:59:54 [Warning] [326731104] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 21:59:54 tcp:127.0.0.1:51610 accepted tcp:iranpaper.ir:443
+2025/11/27 21:59:54 [Warning] [3420535379] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/27 21:59:54 tcp:127.0.0.1:51611 accepted tcp:accounts.google.com:443
+2025/11/27 22:00:00 tcp:127.0.0.1:51616 accepted tcp:android.clients.google.com:443
+2025/11/27 22:00:00 [Warning] [620606646] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/11/27 22:00:01 tcp:127.0.0.1:51618 accepted tcp:mtalk.google.com:5228
+2025/11/27 22:00:01 [Warning] [1861749422] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/11/27 22:00:01 [Warning] [4213544466] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 22:00:01 tcp:127.0.0.1:51621 accepted tcp:iranpaper.ir:443
+2025/11/27 22:00:01 tcp:127.0.0.1:51620 accepted tcp:iranpaper.ir:443
+2025/11/27 22:00:01 [Warning] [1239551258] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 22:00:01 tcp:127.0.0.1:51623 accepted tcp:iranpaper.ir:443
+2025/11/27 22:00:01 tcp:127.0.0.1:51622 accepted tcp:iranpaper.ir:443
+2025/11/27 22:00:01 [Warning] [2762590357] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 22:00:01 [Warning] [1393200338] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 22:00:02 tcp:127.0.0.1:51632 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 22:00:02 [Warning] [13085656] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 22:00:04 [Warning] [3173055129] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 22:00:04 tcp:127.0.0.1:51636 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 22:00:04 [Warning] [3248332968] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 22:00:04 tcp:127.0.0.1:51637 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 22:00:14 tcp:127.0.0.1:51642 accepted tcp:content-autofill.googleapis.com:443
+2025/11/27 22:00:14 [Warning] [1202924778] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/11/27 22:00:22 tcp:127.0.0.1:51646 accepted tcp:www.sciencedirect.com:443
+2025/11/27 22:00:22 [Warning] [3948578809] app/dispatcher: default route for tcp:www.sciencedirect.com:443
+2025/11/27 22:00:22 [Warning] [3981246013] app/dispatcher: default route for tcp:www.sciencedirect.com:443
+2025/11/27 22:00:22 tcp:127.0.0.1:51648 accepted tcp:www.sciencedirect.com:443
+2025/11/27 22:00:23 tcp:127.0.0.1:51652 accepted tcp:sdfestaticassets-eu-west-1.sciencedirectassets.com:443
+2025/11/27 22:00:23 [Warning] [2988931907] app/dispatcher: default route for tcp:sdfestaticassets-eu-west-1.sciencedirectassets.com:443
+2025/11/27 22:00:23 [Warning] [3418010331] app/dispatcher: default route for tcp:sdfestaticassets-eu-west-1.sciencedirectassets.com:443
+2025/11/27 22:00:23 tcp:127.0.0.1:51653 accepted tcp:sdfestaticassets-eu-west-1.sciencedirectassets.com:443
+2025/11/27 22:00:23 tcp:127.0.0.1:51656 accepted tcp:assets.adobedtm.com:443
+2025/11/27 22:00:23 [Warning] [463577602] app/dispatcher: default route for tcp:assets.adobedtm.com:443
+2025/11/27 22:00:23 tcp:127.0.0.1:51657 accepted tcp:cdn.pendo.io:443
+2025/11/27 22:00:23 [Warning] [2889316367] app/dispatcher: default route for tcp:cdn.pendo.io:443
+2025/11/27 22:00:25 [Warning] [215380076] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/11/27 22:00:25 tcp:127.0.0.1:51662 accepted tcp:content-autofill.googleapis.com:443
+2025/11/27 22:00:26 [Warning] [2193901560] app/dispatcher: default route for tcp:js-agent.newrelic.com:443
+2025/11/27 22:00:26 tcp:127.0.0.1:51664 accepted tcp:js-agent.newrelic.com:443
+2025/11/27 22:00:26 [Warning] [904401480] app/dispatcher: default route for tcp:cdn.cookielaw.org:443
+2025/11/27 22:00:26 tcp:127.0.0.1:51666 accepted tcp:cdn.cookielaw.org:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/11/27 23:51:25 [Warning] V2Ray 5.41.0 started
+2025/11/27 23:51:25 tcp:127.0.0.1:54547 rejected  proxy/socks: insufficient header > EOF
+2025/11/27 23:51:36 tcp:127.0.0.1:54588 accepted tcp:clients2.google.com:80
+2025/11/27 23:51:36 [Warning] [1720752289] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/11/27 23:51:37 tcp:127.0.0.1:54590 rejected  proxy/socks: insufficient header > EOF
+2025/11/27 23:51:37 [Warning] [3927786228] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/27 23:51:37 tcp:127.0.0.1:54591 accepted tcp:accounts.google.com:443
+2025/11/27 23:51:37 [Warning] [489838483] app/dispatcher: default route for tcp:www.google.com:443
+2025/11/27 23:51:37 tcp:127.0.0.1:54593 accepted tcp:www.google.com:443
+2025/11/27 23:51:37 [Warning] [4159360231] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/27 23:51:37 tcp:127.0.0.1:54598 accepted tcp:accounts.google.com:443
+2025/11/27 23:51:37 tcp:127.0.0.1:54599 accepted tcp:www.google.com:443
+2025/11/27 23:51:37 [Warning] [2148909801] app/dispatcher: default route for tcp:www.google.com:443
+2025/11/27 23:51:37 [Warning] [102312409] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 23:51:37 tcp:127.0.0.1:54602 accepted tcp:iranpaper.ir:443
+2025/11/27 23:51:37 [Warning] [4267837468] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 23:51:37 tcp:127.0.0.1:54604 accepted tcp:iranpaper.ir:443
+2025/11/27 23:51:39 tcp:127.0.0.1:54606 accepted tcp:iranpaper.ir:443
+2025/11/27 23:51:39 [Warning] [2196699702] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 23:51:39 [Warning] [3351508543] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 23:51:39 tcp:127.0.0.1:54608 accepted tcp:iranpaper.ir:443
+2025/11/27 23:51:39 [Warning] [1213941051] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 23:51:39 tcp:127.0.0.1:54607 accepted tcp:iranpaper.ir:443
+2025/11/27 23:51:45 tcp:127.0.0.1:54614 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 23:51:45 [Warning] [14484617] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 23:51:54 tcp:127.0.0.1:54616 accepted tcp:content-autofill.googleapis.com:443
+2025/11/27 23:51:54 [Warning] [955837494] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/11/27 23:52:01 [Warning] [1136876616] app/dispatcher: default route for tcp:www.goftino.com:443
+2025/11/27 23:52:01 tcp:127.0.0.1:54622 accepted tcp:www.goftino.com:443
+2025/11/27 23:52:02 [Warning] [3156384251] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/27 23:52:02 tcp:127.0.0.1:54624 accepted tcp:cdn.goftino.com:443
+2025/11/27 23:52:02 [Warning] [742774324] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/27 23:52:02 tcp:127.0.0.1:54626 accepted tcp:cdn.goftino.com:443
+2025/11/27 23:52:02 [Warning] [2422398651] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/27 23:52:02 tcp:127.0.0.1:54627 accepted tcp:cdn.goftino.com:443
+2025/11/27 23:52:05 [Warning] [2644538434] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/11/27 23:52:05 tcp:127.0.0.1:54630 accepted tcp:ws11.goftino.com:443
+2025/11/27 23:52:09 [Warning] [172936336] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/11/27 23:52:09 tcp:127.0.0.1:54632 accepted tcp:android.clients.google.com:443
+2025/11/27 23:52:10 [Warning] [1523785376] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/11/27 23:52:10 tcp:127.0.0.1:54634 accepted tcp:mtalk.google.com:5228
+2025/11/27 23:52:12 tcp:127.0.0.1:54640 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 23:52:12 [Warning] [2518236198] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 23:52:12 [Warning] [1216590248] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 23:52:12 tcp:127.0.0.1:54641 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 23:52:32 tcp:127.0.0.1:54659 accepted tcp:mtalk.google.com:5228
+2025/11/27 23:52:32 [Warning] [3246371747] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/11/27 23:52:36 tcp:127.0.0.1:54665 accepted tcp:update.googleapis.com:443
+2025/11/27 23:52:36 [Warning] [2682490216] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/11/27 23:52:37 [Warning] [1075050704] app/dispatcher: default route for tcp:dl.google.com:443
+2025/11/27 23:52:37 tcp:127.0.0.1:54669 accepted tcp:dl.google.com:443
+2025/11/27 23:52:39 [Warning] [2703548351] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/11/27 23:52:39 tcp:127.0.0.1:54679 accepted tcp:android.clients.google.com:443
+2025/11/27 23:52:40 [Warning] [1591606979] app/dispatcher: default route for tcp:dl.google.com:443
+2025/11/27 23:52:40 tcp:127.0.0.1:54681 accepted tcp:dl.google.com:443
+2025/11/27 23:52:41 [Warning] [3591550198] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 23:52:41 tcp:127.0.0.1:54683 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 23:52:41 [Warning] [2179980607] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/27 23:52:41 tcp:127.0.0.1:54685 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/27 23:52:42 [Warning] [2773721441] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:443
+2025/11/27 23:52:42 tcp:127.0.0.1:54687 accepted tcp:edgedl.me.gvt1.com:443
+2025/11/27 23:52:43 tcp:127.0.0.1:54692 accepted tcp:update.googleapis.com:443
+2025/11/27 23:52:43 [Warning] [2342101878] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/11/27 23:53:08 tcp:127.0.0.1:54722 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/27 23:53:08 [Warning] [3281069525] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/27 23:53:21 tcp:127.0.0.1:54744 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/27 23:53:21 [Warning] [4066057329] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/27 23:53:26 [Warning] [734726117] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 23:53:26 tcp:127.0.0.1:54752 accepted tcp:iranpaper.ir:443
+2025/11/27 23:53:35 tcp:127.0.0.1:54763 accepted tcp:content-autofill.googleapis.com:443
+2025/11/27 23:53:35 [Warning] [2203819493] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/11/27 23:53:53 tcp:127.0.0.1:54779 accepted tcp:www.goftino.com:443
+2025/11/27 23:53:53 [Warning] [2276842438] app/dispatcher: default route for tcp:www.goftino.com:443
+2025/11/27 23:53:54 [Warning] [2716698383] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/11/27 23:53:54 tcp:127.0.0.1:54781 accepted tcp:ws11.goftino.com:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/11/27 23:54:43 [Warning] V2Ray 5.41.0 started
+2025/11/27 23:54:43 tcp:127.0.0.1:54939 rejected  proxy/socks: insufficient header > EOF
+2025/11/27 23:54:52 [Warning] [2165403817] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/11/27 23:54:52 tcp:127.0.0.1:54980 accepted tcp:clients2.google.com:80
+2025/11/27 23:54:52 tcp:127.0.0.1:54982 rejected  proxy/socks: insufficient header > EOF
+2025/11/27 23:54:52 tcp:127.0.0.1:54983 rejected  proxy/socks: insufficient header > EOF
+2025/11/27 23:54:52 [Warning] [597570098] app/dispatcher: default route for tcp:www.google.com:443
+2025/11/27 23:54:52 tcp:127.0.0.1:54985 accepted tcp:www.google.com:443
+2025/11/27 23:54:52 tcp:127.0.0.1:54984 accepted tcp:accounts.google.com:443
+2025/11/27 23:54:52 [Warning] [264752603] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/27 23:54:53 [Warning] [4064209732] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 23:54:53 tcp:127.0.0.1:54989 accepted tcp:iranpaper.ir:443
+2025/11/27 23:54:53 [Warning] [3015079341] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 23:54:53 tcp:127.0.0.1:54991 accepted tcp:iranpaper.ir:443
+2025/11/27 23:54:55 [Warning] [1669683613] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 23:54:55 tcp:127.0.0.1:54995 accepted tcp:iranpaper.ir:443
+2025/11/27 23:54:55 tcp:127.0.0.1:54997 accepted tcp:iranpaper.ir:443
+2025/11/27 23:54:55 [Warning] [2934519992] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 23:54:55 tcp:127.0.0.1:54996 accepted tcp:iranpaper.ir:443
+2025/11/27 23:54:55 [Warning] [576590295] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 23:54:55 tcp:127.0.0.1:54999 accepted tcp:iranpaper.ir:443
+2025/11/27 23:54:55 [Warning] [2472315845] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 23:54:55 [Warning] [1536760399] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/27 23:54:55 tcp:127.0.0.1:54998 accepted tcp:iranpaper.ir:443
+2025/11/27 23:55:01 tcp:127.0.0.1:55005 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 23:55:01 [Warning] [2097034319] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/27 23:55:07 [Warning] [1208742296] app/dispatcher: default route for tcp:www.goftino.com:443
+2025/11/27 23:55:07 tcp:127.0.0.1:55011 accepted tcp:www.goftino.com:443
+2025/11/27 23:55:08 tcp:127.0.0.1:55015 accepted tcp:content-autofill.googleapis.com:443
+2025/11/27 23:55:08 [Warning] [263102563] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/11/27 23:55:08 tcp:127.0.0.1:55017 accepted tcp:cdn.goftino.com:443
+2025/11/27 23:55:08 [Warning] [333308624] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/27 23:55:08 [Warning] [492107068] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/27 23:55:08 tcp:127.0.0.1:55019 accepted tcp:cdn.goftino.com:443
+2025/11/27 23:55:08 [Warning] [4290011154] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/27 23:55:08 tcp:127.0.0.1:55020 accepted tcp:cdn.goftino.com:443
+2025/11/27 23:55:10 tcp:127.0.0.1:55023 accepted tcp:ws11.goftino.com:443
+2025/11/27 23:55:10 [Warning] [340028841] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/11/27 23:55:18 [Warning] [579078655] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/11/27 23:55:18 tcp:127.0.0.1:55027 accepted tcp:android.clients.google.com:443
+2025/11/27 23:55:19 [Warning] [647642986] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/11/27 23:55:19 tcp:127.0.0.1:55029 accepted tcp:mtalk.google.com:5228
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/11/28 00:00:15 [Warning] V2Ray 5.41.0 started
+2025/11/28 00:00:15 tcp:127.0.0.1:55569 rejected  proxy/socks: insufficient header > EOF
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/11/28 00:01:26 [Warning] V2Ray 5.41.0 started
+2025/11/28 00:01:26 tcp:127.0.0.1:55754 rejected  proxy/socks: insufficient header > EOF
+2025/11/28 00:01:38 tcp:127.0.0.1:55799 accepted tcp:clients2.google.com:80
+2025/11/28 00:01:38 [Warning] [2978642363] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/11/28 00:01:38 tcp:127.0.0.1:55800 rejected  proxy/socks: failed to read request > read tcp 127.0.0.1:21870->127.0.0.1:55800: read: connection reset by peer
+2025/11/28 00:01:38 tcp:127.0.0.1:55802 rejected  proxy/socks: insufficient header > EOF
+2025/11/28 00:01:38 [Warning] [2934748225] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/28 00:01:38 tcp:127.0.0.1:55804 accepted tcp:accounts.google.com:443
+2025/11/28 00:01:38 [Warning] [1355369203] app/dispatcher: default route for tcp:www.google.com:443
+2025/11/28 00:01:38 tcp:127.0.0.1:55805 accepted tcp:www.google.com:443
+2025/11/28 00:01:38 [Warning] [394226367] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:01:38 tcp:127.0.0.1:55808 accepted tcp:iranpaper.ir:443
+2025/11/28 00:01:38 [Warning] [2662708108] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:01:38 tcp:127.0.0.1:55810 accepted tcp:iranpaper.ir:443
+2025/11/28 00:01:38 [Warning] [3442123662] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:01:38 [Warning] [1422457609] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/28 00:01:38 tcp:127.0.0.1:55812 accepted tcp:iranpaper.ir:443
+2025/11/28 00:01:38 tcp:127.0.0.1:55813 accepted tcp:accounts.google.com:443
+2025/11/28 00:01:40 tcp:127.0.0.1:55816 accepted tcp:iranpaper.ir:443
+2025/11/28 00:01:40 [Warning] [1746479785] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:01:40 tcp:127.0.0.1:55817 accepted tcp:iranpaper.ir:443
+2025/11/28 00:01:40 [Warning] [1035868581] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:01:40 [Warning] [2493113323] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:01:40 tcp:127.0.0.1:55818 accepted tcp:iranpaper.ir:443
+2025/11/28 00:01:40 [Warning] [1717292689] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:01:40 tcp:127.0.0.1:55819 accepted tcp:iranpaper.ir:443
+2025/11/28 00:01:46 tcp:127.0.0.1:55824 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:01:46 [Warning] [1663008533] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:01:52 [Warning] [3103713523] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/11/28 00:01:52 tcp:127.0.0.1:55828 accepted tcp:content-autofill.googleapis.com:443
+2025/11/28 00:01:59 [Warning] [1011547736] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/11/28 00:01:59 tcp:127.0.0.1:55834 accepted tcp:android.clients.google.com:443
+2025/11/28 00:02:00 tcp:127.0.0.1:55836 accepted tcp:mtalk.google.com:5228
+2025/11/28 00:02:00 [Warning] [1710211389] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/11/28 00:02:02 [Warning] [200847470] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:02:02 tcp:127.0.0.1:55840 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:02:02 [Warning] [468464290] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:02:02 tcp:127.0.0.1:55841 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:02:11 tcp:127.0.0.1:55846 accepted tcp:www.goftino.com:443
+2025/11/28 00:02:11 [Warning] [4158472341] app/dispatcher: default route for tcp:www.goftino.com:443
+2025/11/28 00:02:12 [Warning] [3554856515] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:02:12 tcp:127.0.0.1:55848 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:02:12 [Warning] [2097095034] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:02:12 tcp:127.0.0.1:55850 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:02:12 [Warning] [2385806420] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:02:12 tcp:127.0.0.1:55851 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:02:15 tcp:127.0.0.1:55854 accepted tcp:ws11.goftino.com:443
+2025/11/28 00:02:15 [Warning] [331957870] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/11/28 00:02:24 tcp:127.0.0.1:55864 accepted tcp:mtalk.google.com:5228
+2025/11/28 00:02:24 [Warning] [2987908213] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/11/28 00:02:38 [Warning] [1231408155] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/11/28 00:02:38 tcp:127.0.0.1:55873 accepted tcp:update.googleapis.com:443
+2025/11/28 00:02:39 [Warning] [995756119] app/dispatcher: default route for tcp:dl.google.com:443
+2025/11/28 00:02:39 tcp:127.0.0.1:55875 accepted tcp:dl.google.com:443
+2025/11/28 00:02:42 [Warning] [4248592170] app/dispatcher: default route for tcp:dl.google.com:443
+2025/11/28 00:02:42 tcp:127.0.0.1:55879 accepted tcp:dl.google.com:443
+2025/11/28 00:02:43 [Warning] [2228020025] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/11/28 00:02:43 tcp:127.0.0.1:55881 accepted tcp:update.googleapis.com:443
+2025/11/28 00:02:43 [Warning] [3858964409] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/11/28 00:02:43 tcp:127.0.0.1:55883 accepted tcp:update.googleapis.com:443
+2025/11/28 00:02:47 tcp:127.0.0.1:55885 accepted tcp:dl.google.com:443
+2025/11/28 00:02:47 [Warning] [2349879429] app/dispatcher: default route for tcp:dl.google.com:443
+2025/11/28 00:02:48 [Warning] [3158960279] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:02:48 tcp:127.0.0.1:55888 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:02:49 tcp:127.0.0.1:55890 accepted tcp:edgedl.me.gvt1.com:443
+2025/11/28 00:02:49 [Warning] [1769232473] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:443
+2025/11/28 00:02:59 tcp:127.0.0.1:55900 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:02:59 [Warning] [2363611011] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:03:00 [Warning] [532498148] app/dispatcher: default route for tcp:redirector.gvt1.com:80
+2025/11/28 00:03:00 tcp:127.0.0.1:55904 accepted tcp:redirector.gvt1.com:80
+2025/11/28 00:03:00 [Warning] [4241676679] app/dispatcher: default route for tcp:r8---sn-vh5ouxa-hjuk.gvt1.com:80
+2025/11/28 00:03:00 tcp:127.0.0.1:55906 accepted tcp:r8---sn-vh5ouxa-hjuk.gvt1.com:80
+2025/11/28 00:03:11 tcp:127.0.0.1:55916 accepted tcp:android.clients.google.com:443
+2025/11/28 00:03:11 [Warning] [1500308895] app/dispatcher: default route for tcp:android.clients.google.com:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/11/28 00:03:29 [Warning] V2Ray 5.41.0 started
+2025/11/28 00:03:29 tcp:127.0.0.1:55938 rejected  proxy/socks: insufficient header > EOF
+2025/11/28 00:03:40 [Warning] [4088969256] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/11/28 00:03:40 tcp:127.0.0.1:55979 accepted tcp:clients2.google.com:80
+2025/11/28 00:03:40 tcp:127.0.0.1:55982 rejected  proxy/socks: insufficient header > EOF
+2025/11/28 00:03:40 [Warning] [2719957435] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/28 00:03:40 tcp:127.0.0.1:55983 accepted tcp:accounts.google.com:443
+2025/11/28 00:03:40 [Warning] [1110461574] app/dispatcher: default route for tcp:www.google.com:443
+2025/11/28 00:03:40 tcp:127.0.0.1:55984 accepted tcp:www.google.com:443
+2025/11/28 00:03:40 [Warning] [3161213012] app/dispatcher: default route for tcp:www.google.com:443
+2025/11/28 00:03:40 [Warning] [3200467317] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/28 00:03:40 tcp:127.0.0.1:55988 accepted tcp:www.google.com:443
+2025/11/28 00:03:40 tcp:127.0.0.1:55987 accepted tcp:accounts.google.com:443
+2025/11/28 00:03:41 [Warning] [3326210747] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:03:41 tcp:127.0.0.1:55991 accepted tcp:iranpaper.ir:443
+2025/11/28 00:03:41 [Warning] [2015326167] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:03:41 tcp:127.0.0.1:55993 accepted tcp:iranpaper.ir:443
+2025/11/28 00:03:42 [Warning] [3532117458] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:03:42 tcp:127.0.0.1:55995 accepted tcp:iranpaper.ir:443
+2025/11/28 00:03:42 [Warning] [2905430345] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:03:42 tcp:127.0.0.1:55997 accepted tcp:iranpaper.ir:443
+2025/11/28 00:03:42 [Warning] [3392477948] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:03:42 tcp:127.0.0.1:55996 accepted tcp:iranpaper.ir:443
+2025/11/28 00:03:48 [Warning] [3038060122] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:03:48 tcp:127.0.0.1:56001 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:03:53 [Warning] [2386626576] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/11/28 00:03:53 tcp:127.0.0.1:56009 accepted tcp:content-autofill.googleapis.com:443
+2025/11/28 00:03:58 tcp:127.0.0.1:56015 accepted tcp:android.clients.google.com:443
+2025/11/28 00:03:58 [Warning] [710682108] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/11/28 00:04:00 [Warning] [3373712273] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/11/28 00:04:00 tcp:127.0.0.1:56017 accepted tcp:mtalk.google.com:5228
+2025/11/28 00:04:01 [Warning] [2455406343] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:04:01 tcp:127.0.0.1:56019 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:04:01 [Warning] [1875536503] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:04:01 tcp:127.0.0.1:56020 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:04:04 [Warning] [367016795] app/dispatcher: default route for tcp:www.goftino.com:443
+2025/11/28 00:04:04 tcp:127.0.0.1:56025 accepted tcp:www.goftino.com:443
+2025/11/28 00:04:05 [Warning] [2739581818] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:04:05 tcp:127.0.0.1:56027 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:04:05 tcp:127.0.0.1:56030 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:04:05 [Warning] [2773438812] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:04:05 [Warning] [2109149822] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:04:05 tcp:127.0.0.1:56029 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:04:07 [Warning] [3770032206] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/11/28 00:04:07 tcp:127.0.0.1:56035 accepted tcp:ws11.goftino.com:443
+2025/11/28 00:04:07 [Warning] [4290061439] app/dispatcher: default route for tcp:trustseal.enamad.ir:443
+2025/11/28 00:04:07 tcp:127.0.0.1:56037 accepted tcp:trustseal.enamad.ir:443
+2025/11/28 00:04:40 tcp:127.0.0.1:56051 accepted tcp:update.googleapis.com:443
+2025/11/28 00:04:40 [Warning] [1469563244] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/11/28 00:04:41 tcp:127.0.0.1:56053 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:04:41 [Warning] [2142438471] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:04:41 [Warning] [2161556859] app/dispatcher: default route for tcp:redirector.gvt1.com:80
+2025/11/28 00:04:41 tcp:127.0.0.1:56055 accepted tcp:redirector.gvt1.com:80
+2025/11/28 00:04:42 [Warning] [3263936422] app/dispatcher: default route for tcp:r4---sn-vh5ouxa-hjuee.gvt1.com:80
+2025/11/28 00:04:42 tcp:127.0.0.1:56059 accepted tcp:r4---sn-vh5ouxa-hjuee.gvt1.com:80
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/11/28 00:10:06 [Warning] V2Ray 5.41.0 started
+2025/11/28 00:10:06 tcp:127.0.0.1:56370 rejected  proxy/socks: insufficient header > EOF
+2025/11/28 00:10:19 [Warning] [1458011978] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/11/28 00:10:19 tcp:127.0.0.1:56411 accepted tcp:clients2.google.com:80
+2025/11/28 00:10:20 [Warning] [3333207837] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/28 00:10:20 tcp:127.0.0.1:56413 accepted tcp:accounts.google.com:443
+2025/11/28 00:10:20 tcp:127.0.0.1:56414 accepted tcp:www.google.com:443
+2025/11/28 00:10:20 [Warning] [832196735] app/dispatcher: default route for tcp:www.google.com:443
+2025/11/28 00:10:20 [Warning] [358023141] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:10:20 tcp:127.0.0.1:56418 accepted tcp:iranpaper.ir:443
+2025/11/28 00:10:20 tcp:127.0.0.1:56420 accepted tcp:iranpaper.ir:443
+2025/11/28 00:10:20 [Warning] [3197893545] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:10:20 [Warning] [2230784580] app/dispatcher: default route for tcp:www.google.com:443
+2025/11/28 00:10:20 tcp:127.0.0.1:56423 accepted tcp:www.google.com:443
+2025/11/28 00:10:20 tcp:127.0.0.1:56422 accepted tcp:iranpaper.ir:443
+2025/11/28 00:10:20 [Warning] [1665695744] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:10:25 [Warning] [2438829109] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/11/28 00:10:25 tcp:127.0.0.1:56428 accepted tcp:android.clients.google.com:443
+2025/11/28 00:10:26 [Warning] [4204309516] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:10:26 tcp:127.0.0.1:56430 accepted tcp:iranpaper.ir:443
+2025/11/28 00:10:26 tcp:127.0.0.1:56431 accepted tcp:iranpaper.ir:443
+2025/11/28 00:10:26 [Warning] [2698003715] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:10:26 tcp:127.0.0.1:56433 accepted tcp:iranpaper.ir:443
+2025/11/28 00:10:26 [Warning] [2780682126] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:10:26 tcp:127.0.0.1:56432 accepted tcp:iranpaper.ir:443
+2025/11/28 00:10:26 [Warning] [3569532600] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:10:26 [Warning] [676515477] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/11/28 00:10:26 tcp:127.0.0.1:56438 accepted tcp:mtalk.google.com:5228
+2025/11/28 00:10:29 [Warning] [2150886434] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:10:29 tcp:127.0.0.1:56440 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:10:31 tcp:127.0.0.1:56442 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:10:31 [Warning] [2740774582] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:10:31 tcp:127.0.0.1:56443 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:10:31 [Warning] [886237078] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:10:38 [Warning] [235741082] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/11/28 00:10:38 tcp:127.0.0.1:56449 accepted tcp:content-autofill.googleapis.com:443
+2025/11/28 00:10:55 [Warning] [2338587691] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/11/28 00:10:55 tcp:127.0.0.1:56461 accepted tcp:mtalk.google.com:5228
+2025/11/28 00:11:11 [Warning] [3264309806] app/dispatcher: default route for tcp:www.goftino.com:443
+2025/11/28 00:11:11 tcp:127.0.0.1:56488 accepted tcp:www.goftino.com:443
+2025/11/28 00:11:13 [Warning] [4194330928] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:11:13 tcp:127.0.0.1:56490 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:11:13 [Warning] [3786927606] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:11:13 tcp:127.0.0.1:56492 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:11:13 [Warning] [3408134526] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:11:13 tcp:127.0.0.1:56493 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:11:15 [Warning] [740259871] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/11/28 00:11:15 tcp:127.0.0.1:56496 accepted tcp:ws11.goftino.com:443
+2025/11/28 00:11:19 [Warning] [1962906356] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/11/28 00:11:19 tcp:127.0.0.1:56500 accepted tcp:update.googleapis.com:443
+2025/11/28 00:11:20 [Warning] [1558939192] app/dispatcher: default route for tcp:dl.google.com:443
+2025/11/28 00:11:20 tcp:127.0.0.1:56502 accepted tcp:dl.google.com:443
+2025/11/28 00:11:25 tcp:127.0.0.1:56504 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:11:25 [Warning] [1731196627] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:11:26 [Warning] [978081642] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:443
+2025/11/28 00:11:26 tcp:127.0.0.1:56506 accepted tcp:edgedl.me.gvt1.com:443
+2025/11/28 00:11:50 [Warning] [613032918] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/11/28 00:11:50 tcp:127.0.0.1:56512 accepted tcp:android.clients.google.com:443
+2025/11/28 00:12:01 [Warning] [2710907964] app/dispatcher: default route for tcp:dl.google.com:443
+2025/11/28 00:12:01 tcp:127.0.0.1:56514 accepted tcp:dl.google.com:443
+2025/11/28 00:12:01 [Warning] [3180055707] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:12:01 tcp:127.0.0.1:56516 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:12:02 [Warning] [2872078462] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:443
+2025/11/28 00:12:02 tcp:127.0.0.1:56518 accepted tcp:edgedl.me.gvt1.com:443
+2025/11/28 00:12:04 [Warning] [2457730305] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/11/28 00:12:04 tcp:127.0.0.1:56520 accepted tcp:update.googleapis.com:443
+2025/11/28 00:12:20 tcp:127.0.0.1:56522 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:12:20 [Warning] [2670553810] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:12:21 [Warning] [2323961598] app/dispatcher: default route for tcp:redirector.gvt1.com:80
+2025/11/28 00:12:21 tcp:127.0.0.1:56526 accepted tcp:redirector.gvt1.com:80
+2025/11/28 00:12:21 [Warning] [348916682] app/dispatcher: default route for tcp:r4---sn-vh5ouxa-hjuee.gvt1.com:80
+2025/11/28 00:12:21 tcp:127.0.0.1:56528 accepted tcp:r4---sn-vh5ouxa-hjuee.gvt1.com:80
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/11/28 00:40:28 [Warning] V2Ray 5.41.0 started
+2025/11/28 00:40:28 tcp:127.0.0.1:57449 rejected  proxy/socks: insufficient header > EOF
+2025/11/28 00:40:38 [Warning] [3236795905] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/11/28 00:40:38 tcp:127.0.0.1:57495 accepted tcp:clients2.google.com:80
+2025/11/28 00:40:38 [Warning] [1517337780] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/28 00:40:38 tcp:127.0.0.1:57497 accepted tcp:accounts.google.com:443
+2025/11/28 00:40:38 [Warning] [2400198155] app/dispatcher: default route for tcp:www.google.com:443
+2025/11/28 00:40:38 tcp:127.0.0.1:57498 accepted tcp:www.google.com:443
+2025/11/28 00:40:38 tcp:127.0.0.1:57502 accepted tcp:iranpaper.ir:443
+2025/11/28 00:40:38 [Warning] [2072541481] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:40:38 [Warning] [2421638740] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:40:38 tcp:127.0.0.1:57504 accepted tcp:iranpaper.ir:443
+2025/11/28 00:40:39 [Warning] [645212302] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:40:39 tcp:127.0.0.1:57506 accepted tcp:iranpaper.ir:443
+2025/11/28 00:40:41 tcp:127.0.0.1:57511 accepted tcp:iranpaper.ir:443
+2025/11/28 00:40:41 [Warning] [3796259344] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:40:41 [Warning] [1679391791] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:40:41 tcp:127.0.0.1:57510 accepted tcp:iranpaper.ir:443
+2025/11/28 00:40:41 tcp:127.0.0.1:57512 accepted tcp:iranpaper.ir:443
+2025/11/28 00:40:41 [Warning] [3824029922] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:40:41 [Warning] [15228262] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:40:41 tcp:127.0.0.1:57513 accepted tcp:iranpaper.ir:443
+2025/11/28 00:40:47 [Warning] [731239623] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:40:47 tcp:127.0.0.1:57518 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:40:53 tcp:127.0.0.1:57523 accepted tcp:content-autofill.googleapis.com:443
+2025/11/28 00:40:53 [Warning] [3671569477] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/11/28 00:41:00 tcp:127.0.0.1:57549 accepted tcp:android.clients.google.com:443
+2025/11/28 00:41:00 [Warning] [4081931807] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/11/28 00:41:01 [Warning] [3501806253] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/11/28 00:41:01 tcp:127.0.0.1:57551 accepted tcp:mtalk.google.com:5228
+2025/11/28 00:41:03 tcp:127.0.0.1:57553 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:41:03 [Warning] [914277196] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:41:03 [Warning] [4014698791] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:41:03 tcp:127.0.0.1:57554 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:41:10 [Warning] [3189277564] app/dispatcher: default route for tcp:www.goftino.com:443
+2025/11/28 00:41:10 tcp:127.0.0.1:57575 accepted tcp:www.goftino.com:443
+2025/11/28 00:41:10 [Warning] [3101660343] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:41:10 tcp:127.0.0.1:57577 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:41:10 [Warning] [1291872257] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:41:10 tcp:127.0.0.1:57579 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:41:10 [Warning] [3531329428] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:41:10 tcp:127.0.0.1:57580 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:41:13 [Warning] [526936517] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/11/28 00:41:13 tcp:127.0.0.1:57586 accepted tcp:ws11.goftino.com:443
+2025/11/28 00:41:25 [Warning] [1835504164] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/11/28 00:41:25 tcp:127.0.0.1:57602 accepted tcp:mtalk.google.com:5228
+2025/11/28 00:41:38 [Warning] [492582767] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/11/28 00:41:38 tcp:127.0.0.1:57610 accepted tcp:update.googleapis.com:443
+2025/11/28 00:41:38 [Warning] [1390577536] app/dispatcher: default route for tcp:dl.google.com:443
+2025/11/28 00:41:38 tcp:127.0.0.1:57612 accepted tcp:dl.google.com:443
+2025/11/28 00:41:41 [Warning] [1712986404] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:41:41 tcp:127.0.0.1:57614 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:41:42 [Warning] [381886399] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:443
+2025/11/28 00:41:42 tcp:127.0.0.1:57618 accepted tcp:edgedl.me.gvt1.com:443
+2025/11/28 00:41:48 [Warning] [2974228367] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:41:48 tcp:127.0.0.1:57622 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:41:48 tcp:127.0.0.1:57624 accepted tcp:redirector.gvt1.com:80
+2025/11/28 00:41:48 [Warning] [3721898558] app/dispatcher: default route for tcp:redirector.gvt1.com:80
+2025/11/28 00:41:49 [Warning] [57386248] app/dispatcher: default route for tcp:r8---sn-vh5ouxa-hjuk.gvt1.com:80
+2025/11/28 00:41:49 tcp:127.0.0.1:57626 accepted tcp:r8---sn-vh5ouxa-hjuk.gvt1.com:80
+2025/11/28 00:41:59 tcp:127.0.0.1:57635 accepted tcp:dl.google.com:443
+2025/11/28 00:41:59 [Warning] [1104551027] app/dispatcher: default route for tcp:dl.google.com:443
+2025/11/28 00:42:00 [Warning] [3567449812] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/11/28 00:42:00 tcp:127.0.0.1:57637 accepted tcp:update.googleapis.com:443
+2025/11/28 00:42:02 [Warning] [2313388682] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:42:02 tcp:127.0.0.1:57639 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:42:03 [Warning] [55099937] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:443
+2025/11/28 00:42:03 tcp:127.0.0.1:57641 accepted tcp:edgedl.me.gvt1.com:443
+2025/11/28 00:42:16 [Warning] [1558500217] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/11/28 00:42:16 tcp:127.0.0.1:57646 accepted tcp:update.googleapis.com:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/11/28 00:52:47 [Warning] V2Ray 5.41.0 started
+2025/11/28 00:52:47 tcp:127.0.0.1:60128 rejected  proxy/socks: insufficient header > EOF
+2025/11/28 00:52:56 [Warning] [3303090031] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/11/28 00:52:56 tcp:127.0.0.1:60205 accepted tcp:clients2.google.com:80
+2025/11/28 00:52:56 tcp:127.0.0.1:60207 rejected  proxy/socks: insufficient header > EOF
+2025/11/28 00:52:56 tcp:127.0.0.1:60209 rejected  proxy/socks: insufficient header > EOF
+2025/11/28 00:52:56 tcp:127.0.0.1:60211 accepted tcp:www.google.com:443
+2025/11/28 00:52:56 [Warning] [589332231] app/dispatcher: default route for tcp:www.google.com:443
+2025/11/28 00:52:56 tcp:127.0.0.1:60210 accepted tcp:accounts.google.com:443
+2025/11/28 00:52:56 [Warning] [438444085] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/28 00:52:56 [Warning] [2782889913] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:52:56 tcp:127.0.0.1:60218 accepted tcp:iranpaper.ir:443
+2025/11/28 00:52:56 [Warning] [3532189706] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:52:56 tcp:127.0.0.1:60220 accepted tcp:iranpaper.ir:443
+2025/11/28 00:52:57 tcp:127.0.0.1:60222 accepted tcp:iranpaper.ir:443
+2025/11/28 00:52:57 [Warning] [2710945885] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:52:58 [Warning] [194259062] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:52:58 tcp:127.0.0.1:60230 accepted tcp:iranpaper.ir:443
+2025/11/28 00:52:58 tcp:127.0.0.1:60231 accepted tcp:iranpaper.ir:443
+2025/11/28 00:52:58 [Warning] [1615433177] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:52:58 tcp:127.0.0.1:60232 accepted tcp:iranpaper.ir:443
+2025/11/28 00:52:58 [Warning] [1167139020] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:52:58 [Warning] [2010684599] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 00:52:58 tcp:127.0.0.1:60233 accepted tcp:iranpaper.ir:443
+2025/11/28 00:53:05 tcp:127.0.0.1:60268 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:53:05 [Warning] [3190913732] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:53:11 [Warning] [3925656831] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/11/28 00:53:11 tcp:127.0.0.1:60302 accepted tcp:content-autofill.googleapis.com:443
+2025/11/28 00:53:14 tcp:127.0.0.1:60316 accepted tcp:www.goftino.com:443
+2025/11/28 00:53:14 [Warning] [3309885354] app/dispatcher: default route for tcp:www.goftino.com:443
+2025/11/28 00:53:17 tcp:127.0.0.1:60326 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:53:17 [Warning] [1845229288] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:53:17 [Warning] [3743223813] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:53:17 tcp:127.0.0.1:60328 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:53:17 [Warning] [3240768823] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 00:53:17 tcp:127.0.0.1:60329 accepted tcp:cdn.goftino.com:443
+2025/11/28 00:53:19 tcp:127.0.0.1:60340 accepted tcp:ws11.goftino.com:443
+2025/11/28 00:53:19 [Warning] [4212827835] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/11/28 00:53:42 [Warning] [2096565961] app/dispatcher: default route for tcp:passwordsleakcheck-pa.googleapis.com:443
+2025/11/28 00:53:42 tcp:127.0.0.1:60442 accepted tcp:passwordsleakcheck-pa.googleapis.com:443
+2025/11/28 00:53:55 [Warning] [2274005846] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/11/28 00:53:55 tcp:127.0.0.1:60496 accepted tcp:ws11.goftino.com:443
+2025/11/28 00:53:56 [Warning] [3613304964] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/11/28 00:53:56 tcp:127.0.0.1:60502 accepted tcp:update.googleapis.com:443
+2025/11/28 00:53:57 [Warning] [822373869] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:53:57 tcp:127.0.0.1:60508 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/28 00:53:57 [Warning] [793081745] app/dispatcher: default route for tcp:redirector.gvt1.com:80
+2025/11/28 00:53:57 tcp:127.0.0.1:60514 accepted tcp:redirector.gvt1.com:80
+2025/11/28 00:53:58 tcp:127.0.0.1:60516 accepted tcp:r4---sn-vh5ouxa-hjuee.gvt1.com:80
+2025/11/28 00:53:58 [Warning] [1228686569] app/dispatcher: default route for tcp:r4---sn-vh5ouxa-hjuee.gvt1.com:80
+2025/11/28 00:54:00 [Warning] [3716675237] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/11/28 00:54:00 tcp:127.0.0.1:60528 accepted tcp:android.clients.google.com:443
+2025/11/28 00:54:02 tcp:127.0.0.1:60540 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:54:02 tcp:127.0.0.1:60541 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:54:02 [Warning] [3348714016] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:54:02 [Warning] [3170040431] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 00:54:05 [Warning] [1917731558] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/11/28 00:54:05 tcp:127.0.0.1:60556 accepted tcp:mtalk.google.com:5228
+2025/11/28 00:54:34 tcp:127.0.0.1:60684 accepted tcp:mtalk.google.com:5228
+2025/11/28 00:54:34 [Warning] [2939729975] app/dispatcher: default route for tcp:mtalk.google.com:5228
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/11/28 01:11:15 [Warning] V2Ray 5.41.0 started
+2025/11/28 01:11:15 tcp:127.0.0.1:65381 rejected  proxy/socks: insufficient header > EOF
+2025/11/28 01:11:25 tcp:127.0.0.1:65458 accepted tcp:clients2.google.com:80
+2025/11/28 01:11:25 [Warning] [4091713431] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/11/28 01:11:25 tcp:127.0.0.1:65463 rejected  proxy/socks: failed to read request > read tcp 127.0.0.1:21870->127.0.0.1:65463: read: connection reset by peer
+2025/11/28 01:11:25 tcp:127.0.0.1:65465 rejected  proxy/socks: insufficient header > EOF
+2025/11/28 01:11:25 tcp:127.0.0.1:65466 accepted tcp:accounts.google.com:443
+2025/11/28 01:11:25 [Warning] [2139964173] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/28 01:11:25 tcp:127.0.0.1:65467 accepted tcp:www.google.com:443
+2025/11/28 01:11:25 [Warning] [521799925] app/dispatcher: default route for tcp:www.google.com:443
+2025/11/28 01:11:26 [Warning] [4178990058] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 01:11:26 tcp:127.0.0.1:65471 accepted tcp:iranpaper.ir:443
+2025/11/28 01:11:26 [Warning] [357196018] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 01:11:26 tcp:127.0.0.1:65473 accepted tcp:iranpaper.ir:443
+2025/11/28 01:11:26 [Warning] [1941539479] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 01:11:26 tcp:127.0.0.1:65479 accepted tcp:iranpaper.ir:443
+2025/11/28 01:11:29 [Warning] [2075972553] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 01:11:29 [Warning] [137984563] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 01:11:29 [Warning] [3927579646] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 01:11:29 tcp:127.0.0.1:65491 accepted tcp:iranpaper.ir:443
+2025/11/28 01:11:29 tcp:127.0.0.1:65493 accepted tcp:iranpaper.ir:443
+2025/11/28 01:11:29 tcp:127.0.0.1:65494 accepted tcp:iranpaper.ir:443
+2025/11/28 01:11:29 [Warning] [172718438] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 01:11:29 tcp:127.0.0.1:65492 accepted tcp:iranpaper.ir:443
+2025/11/28 01:11:34 tcp:127.0.0.1:65521 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 01:11:34 [Warning] [2076267543] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 01:11:42 tcp:127.0.0.1:49171 accepted tcp:content-autofill.googleapis.com:443
+2025/11/28 01:11:42 [Warning] [2099313562] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/11/28 01:11:45 [Warning] [3218554050] app/dispatcher: default route for tcp:www.goftino.com:443
+2025/11/28 01:11:45 tcp:127.0.0.1:49185 accepted tcp:www.goftino.com:443
+2025/11/28 01:12:09 [Warning] [2560550624] app/dispatcher: default route for tcp:passwordsleakcheck-pa.googleapis.com:443
+2025/11/28 01:12:09 tcp:127.0.0.1:49287 accepted tcp:passwordsleakcheck-pa.googleapis.com:443
+2025/11/28 01:12:25 [Warning] [1135928168] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/11/28 01:12:25 tcp:127.0.0.1:49355 accepted tcp:update.googleapis.com:443
+2025/11/28 01:12:26 [Warning] [4183047321] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/28 01:12:26 tcp:127.0.0.1:49363 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/28 01:12:26 tcp:127.0.0.1:49365 accepted tcp:redirector.gvt1.com:80
+2025/11/28 01:12:26 [Warning] [509505056] app/dispatcher: default route for tcp:redirector.gvt1.com:80
+2025/11/28 01:12:27 [Warning] [1552585395] app/dispatcher: default route for tcp:r4---sn-vh5ouxa-hjuee.gvt1.com:80
+2025/11/28 01:12:27 tcp:127.0.0.1:49371 accepted tcp:r4---sn-vh5ouxa-hjuee.gvt1.com:80
+2025/11/28 01:12:36 [Warning] [2025541120] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 01:12:36 tcp:127.0.0.1:49413 accepted tcp:cdn.goftino.com:443
+2025/11/28 01:12:36 [Warning] [3687373821] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 01:12:36 tcp:127.0.0.1:49416 accepted tcp:cdn.goftino.com:443
+2025/11/28 01:12:36 tcp:127.0.0.1:49415 accepted tcp:cdn.goftino.com:443
+2025/11/28 01:12:36 [Warning] [588586979] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 01:12:39 [Warning] [706463681] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/11/28 01:12:39 tcp:127.0.0.1:49431 accepted tcp:ws11.goftino.com:443
+2025/11/28 01:12:47 [Warning] [2564677234] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/11/28 01:12:47 tcp:127.0.0.1:49471 accepted tcp:android.clients.google.com:443
+2025/11/28 01:12:49 [Warning] [1520841838] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/11/28 01:12:49 tcp:127.0.0.1:49481 accepted tcp:mtalk.google.com:5228
+2025/11/28 01:12:50 tcp:127.0.0.1:49487 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 01:12:50 tcp:127.0.0.1:49488 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 01:12:50 [Warning] [1393689698] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 01:12:50 [Warning] [3481426045] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/11/28 01:20:25 [Warning] V2Ray 5.41.0 started
+2025/11/28 01:20:25 tcp:127.0.0.1:51581 rejected  proxy/socks: insufficient header > EOF
+2025/11/28 01:20:34 [Warning] [2839231601] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/11/28 01:20:34 tcp:127.0.0.1:51661 accepted tcp:clients2.google.com:80
+2025/11/28 01:20:34 tcp:127.0.0.1:51665 rejected  proxy/socks: insufficient header > EOF
+2025/11/28 01:20:34 [Warning] [2372506879] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/28 01:20:34 tcp:127.0.0.1:51664 accepted tcp:accounts.google.com:443
+2025/11/28 01:20:34 tcp:127.0.0.1:51666 accepted tcp:accounts.google.com:443
+2025/11/28 01:20:34 [Warning] [728051518] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/11/28 01:20:34 tcp:127.0.0.1:51667 accepted tcp:www.google.com:443
+2025/11/28 01:20:34 [Warning] [3270902319] app/dispatcher: default route for tcp:www.google.com:443
+2025/11/28 01:20:35 [Warning] [2803247752] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 01:20:35 tcp:127.0.0.1:51676 accepted tcp:iranpaper.ir:443
+2025/11/28 01:20:35 [Warning] [2097384212] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 01:20:35 tcp:127.0.0.1:51678 accepted tcp:iranpaper.ir:443
+2025/11/28 01:20:35 [Warning] [1583971508] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 01:20:35 tcp:127.0.0.1:51680 accepted tcp:iranpaper.ir:443
+2025/11/28 01:20:36 [Warning] [2372506879] app/proxyman/outbound: failed to process outbound traffic > proxy/vless/outbound: failed to find an available destination > common/retry: [dial tcp: lookup persians.fast-film.ir: operation was canceled] > common/retry: all retry attempts failed
+2025/11/28 01:20:36 tcp:127.0.0.1:51690 accepted tcp:iranpaper.ir:443
+2025/11/28 01:20:36 tcp:127.0.0.1:51691 accepted tcp:iranpaper.ir:443
+2025/11/28 01:20:36 [Warning] [1102372442] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 01:20:36 [Warning] [1583320755] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 01:20:36 tcp:127.0.0.1:51692 accepted tcp:iranpaper.ir:443
+2025/11/28 01:20:36 [Warning] [2118936787] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 01:20:36 [Warning] [3404315770] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/11/28 01:20:36 tcp:127.0.0.1:51693 accepted tcp:iranpaper.ir:443
+2025/11/28 01:20:43 [Warning] [789554587] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 01:20:43 tcp:127.0.0.1:51722 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/11/28 01:20:49 [Warning] [2817350197] app/dispatcher: default route for tcp:www.goftino.com:443
+2025/11/28 01:20:49 tcp:127.0.0.1:51757 accepted tcp:www.goftino.com:443
+2025/11/28 01:20:50 tcp:127.0.0.1:51761 accepted tcp:content-autofill.googleapis.com:443
+2025/11/28 01:20:50 [Warning] [2420065527] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/11/28 01:21:08 [Warning] [500088350] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 01:21:08 tcp:127.0.0.1:51869 accepted tcp:cdn.goftino.com:443
+2025/11/28 01:21:08 [Warning] [2549915320] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 01:21:08 [Warning] [1596273913] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/11/28 01:21:08 tcp:127.0.0.1:51871 accepted tcp:cdn.goftino.com:443
+2025/11/28 01:21:08 tcp:127.0.0.1:51872 accepted tcp:cdn.goftino.com:443
+2025/11/28 01:21:10 [Warning] [2703953979] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/11/28 01:21:10 tcp:127.0.0.1:51890 accepted tcp:ws11.goftino.com:443
+2025/11/28 01:21:34 tcp:127.0.0.1:52002 accepted tcp:update.googleapis.com:443
+2025/11/28 01:21:34 [Warning] [1594893548] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/11/28 01:21:35 [Warning] [3327987037] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/11/28 01:21:35 tcp:127.0.0.1:52004 accepted tcp:edgedl.me.gvt1.com:80
+2025/11/28 01:21:35 [Warning] [621166692] app/dispatcher: default route for tcp:redirector.gvt1.com:80
+2025/11/28 01:21:35 tcp:127.0.0.1:52012 accepted tcp:redirector.gvt1.com:80
+2025/11/28 01:21:36 [Warning] [3365297859] app/dispatcher: default route for tcp:r4---sn-vh5ouxa-hjuee.gvt1.com:80
+2025/11/28 01:21:36 tcp:127.0.0.1:52014 accepted tcp:r4---sn-vh5ouxa-hjuee.gvt1.com:80
+2025/11/28 01:21:36 [Warning] [2597774118] app/dispatcher: default route for tcp:passwordsleakcheck-pa.googleapis.com:443
+2025/11/28 01:21:36 tcp:127.0.0.1:52020 accepted tcp:passwordsleakcheck-pa.googleapis.com:443
+2025/11/28 01:21:46 [Warning] [2151360750] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/11/28 01:21:46 tcp:127.0.0.1:52063 accepted tcp:ws11.goftino.com:443
+2025/11/28 01:22:04 [Warning] [1112772832] app/dispatcher: default route for tcp:www.daccess2.com:443
+2025/11/28 01:22:04 tcp:127.0.0.1:52145 accepted tcp:www.daccess2.com:443
+2025/11/28 01:22:04 tcp:127.0.0.1:52147 accepted tcp:www.daccess2.com:443
+2025/11/28 01:22:04 [Warning] [4017848131] app/dispatcher: default route for tcp:www.daccess2.com:443
+2025/11/28 01:22:05 [Warning] [2294076689] app/dispatcher: default route for tcp:static.cloudflareinsights.com:443
+2025/11/28 01:22:05 tcp:127.0.0.1:52153 accepted tcp:static.cloudflareinsights.com:443
+2025/11/28 01:22:06 [Warning] [2521169308] app/dispatcher: default route for tcp:https-www--sciencedirect--com.daccess2.com:443
+2025/11/28 01:22:06 tcp:127.0.0.1:52160 accepted tcp:https-www--sciencedirect--com.daccess2.com:443
+2025/11/28 01:22:06 [Warning] [2341934018] app/dispatcher: default route for tcp:https-www--sciencedirect--com.daccess2.com:443
+2025/11/28 01:22:06 tcp:127.0.0.1:52161 accepted tcp:https-www--sciencedirect--com.daccess2.com:443
+2025/11/28 01:22:10 tcp:127.0.0.1:52180 accepted tcp:https-sdfestaticassets-eu-west-1--sciencedirectassets--com.daccess2.com:443
+2025/11/28 01:22:10 [Warning] [2713841156] app/dispatcher: default route for tcp:https-sdfestaticassets-eu-west-1--sciencedirectassets--com.daccess2.com:443
+2025/11/28 01:22:10 [Warning] [1054220782] app/dispatcher: default route for tcp:assets.adobedtm.com:443
+2025/11/28 01:22:10 tcp:127.0.0.1:52181 accepted tcp:assets.adobedtm.com:443
+2025/11/28 01:22:10 [Warning] [1111087377] app/dispatcher: default route for tcp:cdn.pendo.io:443
+2025/11/28 01:22:10 tcp:127.0.0.1:52182 accepted tcp:cdn.pendo.io:443
+2025/11/28 01:22:10 [Warning] [765172043] app/dispatcher: default route for tcp:https-sdfestaticassets-eu-west-1--sciencedirectassets--com.daccess2.com:443
+2025/11/28 01:22:10 tcp:127.0.0.1:52186 accepted tcp:https-sdfestaticassets-eu-west-1--sciencedirectassets--com.daccess2.com:443
+2025/11/28 01:22:10 tcp:127.0.0.1:52188 accepted tcp:https-sdfestaticassets-eu-west-1--sciencedirectassets--com.daccess2.com:443
+2025/11/28 01:22:10 [Warning] [3838266587] app/dispatcher: default route for tcp:https-sdfestaticassets-eu-west-1--sciencedirectassets--com.daccess2.com:443
+2025/11/28 01:22:10 [Warning] [3072036948] app/dispatcher: default route for tcp:https-sdfestaticassets-eu-west-1--sciencedirectassets--com.daccess2.com:443
+2025/11/28 01:22:10 tcp:127.0.0.1:52190 accepted tcp:https-sdfestaticassets-eu-west-1--sciencedirectassets--com.daccess2.com:443
+2025/11/28 01:22:10 tcp:127.0.0.1:52189 accepted tcp:https-sdfestaticassets-eu-west-1--sciencedirectassets--com.daccess2.com:443
+2025/11/28 01:22:10 [Warning] [1508336252] app/dispatcher: default route for tcp:https-sdfestaticassets-eu-west-1--sciencedirectassets--com.daccess2.com:443
+2025/11/28 01:22:10 [Warning] [3753739056] app/dispatcher: default route for tcp:https-sdfestaticassets-eu-west-1--sciencedirectassets--com.daccess2.com:443
+2025/11/28 01:22:10 tcp:127.0.0.1:52194 accepted tcp:https-sdfestaticassets-eu-west-1--sciencedirectassets--com.daccess2.com:443
+2025/11/28 01:22:10 [Warning] [2455066595] app/dispatcher: default route for tcp:www.sciencedirect.com:443
+2025/11/28 01:22:10 tcp:127.0.0.1:52196 accepted tcp:www.sciencedirect.com:443
+2025/11/28 01:22:12 [Warning] [998382373] app/dispatcher: default route for tcp:sdfestaticassets-eu-west-1.sciencedirectassets.com:443
+2025/11/28 01:22:12 tcp:127.0.0.1:52206 accepted tcp:sdfestaticassets-eu-west-1.sciencedirectassets.com:443
+2025/11/28 01:22:12 [Warning] [340966171] app/dispatcher: default route for tcp:https-assets--adobedtm--com.daccess2.com:443
+2025/11/28 01:22:12 tcp:127.0.0.1:52208 accepted tcp:https-assets--adobedtm--com.daccess2.com:443
+2025/11/28 01:22:12 [Warning] [2023273700] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/11/28 01:22:12 tcp:127.0.0.1:52214 accepted tcp:content-autofill.googleapis.com:443
+2025/11/28 01:22:16 tcp:127.0.0.1:52229 accepted tcp:js-agent.newrelic.com:443
+2025/11/28 01:22:16 [Warning] [3526228764] app/dispatcher: default route for tcp:js-agent.newrelic.com:443
+2025/11/28 01:22:20 tcp:127.0.0.1:52247 accepted tcp:dpm.demdex.net:443
+2025/11/28 01:22:20 [Warning] [417612466] app/dispatcher: default route for tcp:dpm.demdex.net:443
+2025/11/28 01:22:20 [Warning] [1477852099] app/dispatcher: default route for tcp:assets.adobedtm.com:443
+2025/11/28 01:22:20 tcp:127.0.0.1:52249 accepted tcp:assets.adobedtm.com:443
+2025/11/28 01:22:20 [Warning] [3796676364] app/dispatcher: default route for tcp:assets.adobedtm.com:443
+2025/11/28 01:22:20 tcp:127.0.0.1:52250 accepted tcp:assets.adobedtm.com:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/12/12 10:22:56 [Warning] V2Ray 5.41.0 started
+2025/12/12 10:22:56 tcp:127.0.0.1:50597 rejected  proxy/socks: insufficient header > EOF
+2025/12/12 10:23:04 [Warning] [2492981020] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/12/12 10:23:04 tcp:127.0.0.1:50636 accepted tcp:clients2.google.com:80
+2025/12/12 10:23:05 tcp:127.0.0.1:50638 accepted tcp:accounts.google.com:443
+2025/12/12 10:23:05 [Warning] [2203354393] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/12/12 10:23:05 tcp:127.0.0.1:50639 accepted tcp:www.google.com:443
+2025/12/12 10:23:05 [Warning] [3182378278] app/dispatcher: default route for tcp:www.google.com:443
+2025/12/12 10:23:05 [Warning] [2251151697] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 10:23:05 tcp:127.0.0.1:50640 accepted tcp:iranpaper.ir:443
+2025/12/12 10:23:05 [Warning] [943292169] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 10:23:05 tcp:127.0.0.1:50641 accepted tcp:iranpaper.ir:443
+2025/12/12 10:23:06 [Warning] [3421930110] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 10:23:06 tcp:127.0.0.1:50647 accepted tcp:iranpaper.ir:443
+2025/12/12 10:23:07 [Warning] [299112538] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 10:23:07 tcp:127.0.0.1:50649 accepted tcp:iranpaper.ir:443
+2025/12/12 10:23:07 tcp:127.0.0.1:50651 accepted tcp:iranpaper.ir:443
+2025/12/12 10:23:07 [Warning] [42991081] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 10:23:07 tcp:127.0.0.1:50650 accepted tcp:iranpaper.ir:443
+2025/12/12 10:23:07 [Warning] [848766077] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 10:23:07 tcp:127.0.0.1:50652 accepted tcp:iranpaper.ir:443
+2025/12/12 10:23:07 [Warning] [125475032] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 10:23:14 [Warning] [3823911352] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 10:23:14 tcp:127.0.0.1:50657 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 10:23:20 [Warning] [246837197] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/12/12 10:23:20 tcp:127.0.0.1:50659 accepted tcp:content-autofill.googleapis.com:443
+2025/12/12 10:23:23 [Warning] [1381306282] app/dispatcher: default route for tcp:www.goftino.com:443
+2025/12/12 10:23:23 tcp:127.0.0.1:50661 accepted tcp:www.goftino.com:443
+2025/12/12 10:23:31 [Warning] [3501631484] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/12/12 10:23:31 tcp:127.0.0.1:50663 accepted tcp:cdn.goftino.com:443
+2025/12/12 10:23:31 [Warning] [3502542161] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/12/12 10:23:31 tcp:127.0.0.1:50665 accepted tcp:cdn.goftino.com:443
+2025/12/12 10:23:31 [Warning] [1350566241] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/12/12 10:23:31 tcp:127.0.0.1:50666 accepted tcp:cdn.goftino.com:443
+2025/12/12 10:23:33 tcp:127.0.0.1:50669 accepted tcp:ws11.goftino.com:443
+2025/12/12 10:23:33 [Warning] [370471287] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/12/12 10:23:56 [Warning] [1716116434] app/dispatcher: default route for tcp:passwordsleakcheck-pa.googleapis.com:443
+2025/12/12 10:23:56 tcp:127.0.0.1:50683 accepted tcp:passwordsleakcheck-pa.googleapis.com:443
+2025/12/12 10:24:04 tcp:127.0.0.1:50687 accepted tcp:update.googleapis.com:443
+2025/12/12 10:24:04 [Warning] [3177432006] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/12/12 10:24:09 [Warning] [1229334100] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/12/12 10:24:09 tcp:127.0.0.1:50691 accepted tcp:android.clients.google.com:443
+2025/12/12 10:24:10 [Warning] [2792320632] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/12/12 10:24:10 tcp:127.0.0.1:50693 accepted tcp:mtalk.google.com:5228
+2025/12/12 10:24:11 [Warning] [2654408959] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 10:24:11 tcp:127.0.0.1:50695 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 10:24:11 [Warning] [728078328] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 10:24:11 tcp:127.0.0.1:50696 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 10:24:11 [Warning] [4163930542] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/12/12 10:24:11 tcp:127.0.0.1:50699 accepted tcp:ws11.goftino.com:443
+2025/12/12 10:24:30 [Warning] [1919890811] app/dispatcher: default route for tcp:www.daccess2.com:443
+2025/12/12 10:24:30 tcp:127.0.0.1:50703 accepted tcp:www.daccess2.com:443
+2025/12/12 10:24:30 [Warning] [4183336509] app/dispatcher: default route for tcp:www.daccess2.com:443
+2025/12/12 10:24:30 tcp:127.0.0.1:50705 accepted tcp:www.daccess2.com:443
+2025/12/12 10:24:31 [Warning] [2399244180] app/dispatcher: default route for tcp:static.cloudflareinsights.com:443
+2025/12/12 10:24:31 tcp:127.0.0.1:50707 accepted tcp:static.cloudflareinsights.com:443
+2025/12/12 10:24:32 [Warning] [143551938] app/dispatcher: default route for tcp:https-www--sciencedirect--com.daccess2.com:443
+2025/12/12 10:24:32 tcp:127.0.0.1:50709 accepted tcp:https-www--sciencedirect--com.daccess2.com:443
+2025/12/12 10:24:32 [Warning] [4000902727] app/dispatcher: default route for tcp:https-www--sciencedirect--com.daccess2.com:443
+2025/12/12 10:24:32 tcp:127.0.0.1:50710 accepted tcp:https-www--sciencedirect--com.daccess2.com:443
+2025/12/12 10:24:38 [Warning] [949439644] app/dispatcher: default route for tcp:https-sdfestaticassets-us-east-1--sciencedirectassets--com.daccess2.com:443
+2025/12/12 10:24:38 tcp:127.0.0.1:50715 accepted tcp:https-sdfestaticassets-us-east-1--sciencedirectassets--com.daccess2.com:443
+2025/12/12 10:24:39 [Warning] [2918391795] app/dispatcher: default route for tcp:https-sdfestaticassets-eu-west-1--sciencedirectassets--com.daccess2.com:443
+2025/12/12 10:24:39 tcp:127.0.0.1:50719 accepted tcp:https-sdfestaticassets-eu-west-1--sciencedirectassets--com.daccess2.com:443
+2025/12/12 10:25:02 tcp:127.0.0.1:50723 accepted tcp:static.cloudflareinsights.com:443
+2025/12/12 10:25:02 [Warning] [1802501684] app/dispatcher: default route for tcp:static.cloudflareinsights.com:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/12/12 10:29:41 [Warning] V2Ray 5.41.0 started
+2025/12/12 10:29:41 tcp:127.0.0.1:50846 rejected  proxy/socks: insufficient header > EOF
+2025/12/12 10:29:50 [Warning] [445924180] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/12/12 10:29:50 tcp:127.0.0.1:50885 accepted tcp:clients2.google.com:80
+2025/12/12 10:29:50 tcp:127.0.0.1:50887 rejected  proxy/socks: failed to read request > read tcp 127.0.0.1:21870->127.0.0.1:50887: read: connection reset by peer
+2025/12/12 10:29:50 tcp:127.0.0.1:50888 rejected  proxy/socks: insufficient header > EOF
+2025/12/12 10:29:50 tcp:127.0.0.1:50890 accepted tcp:www.google.com:443
+2025/12/12 10:29:50 [Warning] [920129880] app/dispatcher: default route for tcp:www.google.com:443
+2025/12/12 10:29:50 tcp:127.0.0.1:50889 accepted tcp:accounts.google.com:443
+2025/12/12 10:29:50 [Warning] [774022296] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/12/12 10:29:50 tcp:127.0.0.1:50894 accepted tcp:iranpaper.ir:443
+2025/12/12 10:29:50 [Warning] [4267702935] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 10:29:50 [Warning] [3849740151] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 10:29:50 tcp:127.0.0.1:50896 accepted tcp:iranpaper.ir:443
+2025/12/12 10:29:51 [Warning] [2696778472] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 10:29:51 tcp:127.0.0.1:50898 accepted tcp:iranpaper.ir:443
+2025/12/12 10:29:52 [Warning] [1182801849] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 10:29:52 tcp:127.0.0.1:50900 accepted tcp:iranpaper.ir:443
+2025/12/12 10:29:52 [Warning] [3505929551] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 10:29:52 tcp:127.0.0.1:50901 accepted tcp:iranpaper.ir:443
+2025/12/12 10:29:52 tcp:127.0.0.1:50902 accepted tcp:iranpaper.ir:443
+2025/12/12 10:29:52 [Warning] [745845443] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 10:29:52 [Warning] [4250785154] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 10:29:52 tcp:127.0.0.1:50903 accepted tcp:iranpaper.ir:443
+2025/12/12 10:29:59 tcp:127.0.0.1:50910 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 10:29:59 [Warning] [2014475369] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 10:30:05 [Warning] [4052599316] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/12/12 10:30:05 tcp:127.0.0.1:50912 accepted tcp:content-autofill.googleapis.com:443
+2025/12/12 10:30:08 [Warning] [3170788948] app/dispatcher: default route for tcp:www.goftino.com:443
+2025/12/12 10:30:08 tcp:127.0.0.1:50915 accepted tcp:www.goftino.com:443
+2025/12/12 10:30:18 [Warning] [1618516046] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/12/12 10:30:18 tcp:127.0.0.1:50923 accepted tcp:cdn.goftino.com:443
+2025/12/12 10:30:18 [Warning] [2329563396] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/12/12 10:30:18 tcp:127.0.0.1:50925 accepted tcp:cdn.goftino.com:443
+2025/12/12 10:30:18 [Warning] [3100238043] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/12/12 10:30:18 tcp:127.0.0.1:50926 accepted tcp:cdn.goftino.com:443
+2025/12/12 10:30:20 [Warning] [1794446661] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/12/12 10:30:20 tcp:127.0.0.1:50929 accepted tcp:ws11.goftino.com:443
+2025/12/12 10:30:42 tcp:127.0.0.1:50937 accepted tcp:passwordsleakcheck-pa.googleapis.com:443
+2025/12/12 10:30:42 [Warning] [3872716484] app/dispatcher: default route for tcp:passwordsleakcheck-pa.googleapis.com:443
+2025/12/12 10:30:50 [Warning] [1802983516] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/12/12 10:30:50 tcp:127.0.0.1:50939 accepted tcp:update.googleapis.com:443
+2025/12/12 10:30:54 tcp:127.0.0.1:50943 accepted tcp:ws11.goftino.com:443
+2025/12/12 10:30:54 [Warning] [2738310268] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/12/12 10:31:14 [Warning] [2107030469] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/12/12 10:31:14 tcp:127.0.0.1:50949 accepted tcp:android.clients.google.com:443
+2025/12/12 10:31:14 [Warning] [3327307517] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/12/12 10:31:14 tcp:127.0.0.1:50951 accepted tcp:mtalk.google.com:5228
+2025/12/12 10:31:16 tcp:127.0.0.1:50954 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 10:31:16 [Warning] [3973026146] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 10:31:16 [Warning] [157095917] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 10:31:16 tcp:127.0.0.1:50953 accepted tcp:optimizationguide-pa.googleapis.com:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/12/12 12:16:16 [Warning] V2Ray 5.41.0 started
+2025/12/12 12:16:16 tcp:127.0.0.1:53604 rejected  proxy/socks: insufficient header > EOF
+2025/12/12 12:16:16 [Warning] [53840618] app/dispatcher: default route for tcp:1.1.1.1:443
+2025/12/12 12:16:16 tcp:127.0.0.1:53605 accepted tcp:1.1.1.1:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/12/12 12:16:17 [Warning] V2Ray 5.41.0 started
+2025/12/12 12:16:17 tcp:127.0.0.1:53608 rejected  proxy/socks: insufficient header > EOF
+2025/12/12 12:16:17 [Warning] [1957839823] app/dispatcher: default route for tcp:1.1.1.1:443
+2025/12/12 12:16:17 tcp:127.0.0.1:53609 accepted tcp:1.1.1.1:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/12/12 19:16:09 [Warning] V2Ray 5.41.0 started
+2025/12/12 19:16:09 tcp:127.0.0.1:50460 rejected  proxy/socks: insufficient header > EOF
+2025/12/12 19:16:20 tcp:127.0.0.1:50510 accepted tcp:clients2.google.com:80
+2025/12/12 19:16:20 [Warning] [1056988568] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/12/12 19:16:20 [Warning] [4035122937] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/12/12 19:16:20 tcp:127.0.0.1:50511 accepted tcp:accounts.google.com:443
+2025/12/12 19:16:20 tcp:127.0.0.1:50512 accepted tcp:www.google.com:443
+2025/12/12 19:16:20 [Warning] [1208124484] app/dispatcher: default route for tcp:www.google.com:443
+2025/12/12 19:16:20 tcp:127.0.0.1:50515 accepted tcp:www.google.com:443
+2025/12/12 19:16:20 [Warning] [4180139541] app/dispatcher: default route for tcp:www.google.com:443
+2025/12/12 19:16:20 tcp:127.0.0.1:50514 accepted tcp:accounts.google.com:443
+2025/12/12 19:16:20 [Warning] [897207542] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/12/12 19:16:20 [Warning] [1127064467] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 19:16:20 tcp:127.0.0.1:50523 accepted tcp:iranpaper.ir:443
+2025/12/12 19:16:20 [Warning] [3825458697] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 19:16:20 tcp:127.0.0.1:50525 accepted tcp:iranpaper.ir:443
+2025/12/12 19:16:21 [Warning] [1557696767] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 19:16:21 tcp:127.0.0.1:50527 accepted tcp:iranpaper.ir:443
+2025/12/12 19:16:22 [Warning] [3779685477] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 19:16:22 tcp:127.0.0.1:50529 accepted tcp:iranpaper.ir:443
+2025/12/12 19:16:22 tcp:127.0.0.1:50531 accepted tcp:iranpaper.ir:443
+2025/12/12 19:16:22 [Warning] [709089165] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 19:16:22 tcp:127.0.0.1:50530 accepted tcp:iranpaper.ir:443
+2025/12/12 19:16:22 [Warning] [399178635] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 19:16:22 [Warning] [786532070] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 19:16:22 tcp:127.0.0.1:50532 accepted tcp:iranpaper.ir:443
+2025/12/12 19:16:28 [Warning] [4253152531] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 19:16:28 tcp:127.0.0.1:50543 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 19:16:35 tcp:127.0.0.1:50545 accepted tcp:content-autofill.googleapis.com:443
+2025/12/12 19:16:35 [Warning] [3571887900] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/12/12 19:16:37 [Warning] [3272490872] app/dispatcher: default route for tcp:www.goftino.com:443
+2025/12/12 19:16:37 tcp:127.0.0.1:50553 accepted tcp:www.goftino.com:443
+2025/12/12 19:16:46 tcp:127.0.0.1:50559 accepted tcp:cdn.goftino.com:443
+2025/12/12 19:16:46 [Warning] [251391237] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/12/12 19:16:46 [Warning] [211093673] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/12/12 19:16:46 tcp:127.0.0.1:50561 accepted tcp:cdn.goftino.com:443
+2025/12/12 19:16:46 [Warning] [757080719] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/12/12 19:16:46 tcp:127.0.0.1:50562 accepted tcp:cdn.goftino.com:443
+2025/12/12 19:16:49 [Warning] [1904113607] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/12/12 19:16:49 tcp:127.0.0.1:50567 accepted tcp:ws11.goftino.com:443
+2025/12/12 19:17:10 tcp:127.0.0.1:50589 accepted tcp:passwordsleakcheck-pa.googleapis.com:443
+2025/12/12 19:17:10 [Warning] [2082963359] app/dispatcher: default route for tcp:passwordsleakcheck-pa.googleapis.com:443
+2025/12/12 19:17:20 tcp:127.0.0.1:50604 accepted tcp:update.googleapis.com:443
+2025/12/12 19:17:20 [Warning] [2062951377] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/12/12 19:17:22 tcp:127.0.0.1:50610 accepted tcp:ws11.goftino.com:443
+2025/12/12 19:17:22 [Warning] [300911504] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/12/12 19:17:42 tcp:127.0.0.1:50630 accepted tcp:android.clients.google.com:443
+2025/12/12 19:17:42 [Warning] [470290872] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/12/12 19:17:43 [Warning] [1626683162] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/12/12 19:17:43 tcp:127.0.0.1:50632 accepted tcp:mtalk.google.com:5228
+2025/12/12 19:17:45 tcp:127.0.0.1:50634 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 19:17:45 [Warning] [3297575325] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 19:17:45 [Warning] [2735211658] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 19:17:45 tcp:127.0.0.1:50635 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/12 19:17:55 tcp:127.0.0.1:50645 accepted tcp:iranpaper.ir:443
+2025/12/12 19:17:55 [Warning] [3188378430] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 19:17:55 tcp:127.0.0.1:50646 accepted tcp:iranpaper.ir:443
+2025/12/12 19:17:55 [Warning] [4176253454] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/12 19:18:04 tcp:127.0.0.1:50662 accepted tcp:ws11.goftino.com:443
+2025/12/12 19:18:04 [Warning] [2360701020] app/dispatcher: default route for tcp:ws11.goftino.com:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/12/16 20:51:36 [Warning] V2Ray 5.41.0 started
+2025/12/16 20:51:36 tcp:127.0.0.1:55126 rejected  proxy/socks: insufficient header > EOF
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/12/16 21:02:16 [Warning] V2Ray 5.41.0 started
+2025/12/16 21:02:16 tcp:127.0.0.1:55800 rejected  proxy/socks: insufficient header > EOF
+2025/12/16 21:03:21 [Warning] [457272238] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/12/16 21:03:21 tcp:127.0.0.1:55927 accepted tcp:clients2.google.com:80
+2025/12/16 21:03:21 tcp:127.0.0.1:55929 rejected  proxy/socks: insufficient header > EOF
+2025/12/16 21:03:21 tcp:127.0.0.1:55930 accepted tcp:accounts.google.com:443
+2025/12/16 21:03:21 [Warning] [2459392383] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/12/16 21:03:21 [Warning] [2835809751] app/dispatcher: default route for tcp:www.google.com:443
+2025/12/16 21:03:21 tcp:127.0.0.1:55931 accepted tcp:www.google.com:443
+2025/12/16 21:03:21 [Warning] [2516578693] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/16 21:03:21 tcp:127.0.0.1:55933 accepted tcp:iranpaper.ir:443
+2025/12/16 21:03:21 [Warning] [3636064838] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/16 21:03:21 tcp:127.0.0.1:55932 accepted tcp:iranpaper.ir:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/12/16 21:07:00 [Warning] V2Ray 5.41.0 started
+2025/12/16 21:07:00 tcp:127.0.0.1:56989 rejected  proxy/socks: insufficient header > EOF
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/12/16 21:11:55 [Warning] V2Ray 5.41.0 started
+2025/12/16 21:11:56 tcp:127.0.0.1:57493 rejected  proxy/socks: insufficient header > EOF
+2025/12/16 21:12:06 [Warning] [2915492807] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/12/16 21:12:06 tcp:127.0.0.1:57528 accepted tcp:clients2.google.com:80
+2025/12/16 21:12:06 tcp:127.0.0.1:57531 rejected  proxy/socks: insufficient header > EOF
+2025/12/16 21:12:06 tcp:127.0.0.1:57532 rejected  proxy/socks: insufficient header > EOF
+2025/12/16 21:12:06 [Warning] [1676297376] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/12/16 21:12:06 tcp:127.0.0.1:57533 accepted tcp:accounts.google.com:443
+2025/12/16 21:12:06 [Warning] [1900562277] app/dispatcher: default route for tcp:www.google.com:443
+2025/12/16 21:12:06 tcp:127.0.0.1:57534 accepted tcp:www.google.com:443
+2025/12/16 21:12:06 [Warning] [3105701150] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/16 21:12:06 tcp:127.0.0.1:57537 accepted tcp:iranpaper.ir:443
+2025/12/16 21:12:06 [Warning] [2540104550] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/16 21:12:06 tcp:127.0.0.1:57539 accepted tcp:iranpaper.ir:443
+2025/12/16 21:12:06 [Warning] [3291447982] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/16 21:12:06 tcp:127.0.0.1:57541 accepted tcp:iranpaper.ir:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/12/17 07:37:03 [Warning] V2Ray 5.41.0 started
+2025/12/17 07:37:03 tcp:127.0.0.1:52817 rejected  proxy/socks: insufficient header > EOF
+2025/12/17 07:37:03 [Warning] [2021225982] app/dispatcher: default route for tcp:1.1.1.1:443
+2025/12/17 07:37:03 tcp:127.0.0.1:52818 accepted tcp:1.1.1.1:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/12/17 07:37:04 [Warning] V2Ray 5.41.0 started
+2025/12/17 07:37:04 tcp:127.0.0.1:52821 rejected  proxy/socks: insufficient header > EOF
+2025/12/17 07:37:04 [Warning] [1457639642] app/dispatcher: default route for tcp:1.1.1.1:443
+2025/12/17 07:37:04 tcp:127.0.0.1:52822 accepted tcp:1.1.1.1:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/12/17 07:37:23 [Warning] V2Ray 5.41.0 started
+2025/12/17 07:37:23 tcp:127.0.0.1:52831 rejected  proxy/socks: insufficient header > EOF
+2025/12/17 07:37:36 [Warning] [4262400303] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/12/17 07:37:36 tcp:127.0.0.1:52906 accepted tcp:clients2.google.com:80
+2025/12/17 07:37:36 [Warning] [2497225580] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/12/17 07:37:36 tcp:127.0.0.1:52910 accepted tcp:accounts.google.com:443
+2025/12/17 07:37:36 [Warning] [4143873720] app/dispatcher: default route for tcp:www.google.com:443
+2025/12/17 07:37:36 tcp:127.0.0.1:52913 accepted tcp:www.google.com:443
+2025/12/17 07:37:36 [Warning] [4038368674] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 07:37:36 tcp:127.0.0.1:52924 accepted tcp:iranpaper.ir:443
+2025/12/17 07:37:36 [Warning] [2316781575] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 07:37:36 tcp:127.0.0.1:52927 accepted tcp:iranpaper.ir:443
+2025/12/17 07:37:36 tcp:127.0.0.1:52932 accepted tcp:accounts.google.com:443
+2025/12/17 07:37:36 [Warning] [3319961209] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/12/17 07:37:36 tcp:127.0.0.1:52931 accepted tcp:iranpaper.ir:443
+2025/12/17 07:37:36 [Warning] [443182101] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 07:37:39 [Warning] [716511320] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 07:37:39 tcp:127.0.0.1:52935 accepted tcp:iranpaper.ir:443
+2025/12/17 07:37:39 tcp:127.0.0.1:52936 accepted tcp:iranpaper.ir:443
+2025/12/17 07:37:39 [Warning] [4039415381] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 07:37:39 [Warning] [587816928] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 07:37:39 tcp:127.0.0.1:52937 accepted tcp:iranpaper.ir:443
+2025/12/17 07:37:39 [Warning] [3773238848] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 07:37:39 tcp:127.0.0.1:52938 accepted tcp:iranpaper.ir:443
+2025/12/17 07:37:44 [Warning] [3972190444] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/17 07:37:44 tcp:127.0.0.1:52953 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/17 07:37:54 [Warning] [1463742030] app/dispatcher: default route for tcp:www.goftino.com:443
+2025/12/17 07:37:54 tcp:127.0.0.1:52977 accepted tcp:www.goftino.com:443
+2025/12/17 07:37:56 tcp:127.0.0.1:52983 accepted tcp:content-autofill.googleapis.com:443
+2025/12/17 07:37:56 [Warning] [4242819660] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/12/17 07:37:56 [Warning] [1940567131] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/12/17 07:37:56 tcp:127.0.0.1:52985 accepted tcp:cdn.goftino.com:443
+2025/12/17 07:37:56 [Warning] [3809425077] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/12/17 07:37:56 tcp:127.0.0.1:52986 accepted tcp:cdn.goftino.com:443
+2025/12/17 07:37:56 tcp:127.0.0.1:52987 accepted tcp:cdn.goftino.com:443
+2025/12/17 07:37:56 [Warning] [124060885] app/dispatcher: default route for tcp:cdn.goftino.com:443
+2025/12/17 07:37:59 [Warning] [1638205663] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/12/17 07:37:59 tcp:127.0.0.1:52993 accepted tcp:ws11.goftino.com:443
+2025/12/17 07:38:29 [Warning] [3747041677] app/dispatcher: default route for tcp:passwordsleakcheck-pa.googleapis.com:443
+2025/12/17 07:38:29 tcp:127.0.0.1:52997 accepted tcp:passwordsleakcheck-pa.googleapis.com:443
+2025/12/17 07:38:36 [Warning] [3289389753] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/12/17 07:38:36 tcp:127.0.0.1:53001 accepted tcp:update.googleapis.com:443
+2025/12/17 07:38:36 [Warning] [2811700062] app/dispatcher: default route for tcp:ws11.goftino.com:443
+2025/12/17 07:38:36 tcp:127.0.0.1:53003 accepted tcp:ws11.goftino.com:443
+2025/12/17 07:38:36 [Warning] [2429449534] app/dispatcher: default route for tcp:dl.google.com:443
+2025/12/17 07:38:36 tcp:127.0.0.1:53005 accepted tcp:dl.google.com:443
+2025/12/17 07:38:37 tcp:127.0.0.1:53009 accepted tcp:edgedl.me.gvt1.com:80
+2025/12/17 07:38:37 [Warning] [1924954271] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/12/17 07:38:38 [Warning] [3539788673] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:443
+2025/12/17 07:38:38 tcp:127.0.0.1:53011 accepted tcp:edgedl.me.gvt1.com:443
+2025/12/17 07:39:10 [Warning] [1753533172] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/12/17 07:39:10 tcp:127.0.0.1:53029 accepted tcp:android.clients.google.com:443
+2025/12/17 07:39:11 tcp:127.0.0.1:53031 accepted tcp:mtalk.google.com:5228
+2025/12/17 07:39:11 [Warning] [2828146110] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/12/17 07:39:12 [Warning] [503867053] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/17 07:39:12 tcp:127.0.0.1:53034 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/17 07:39:12 tcp:127.0.0.1:53035 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/17 07:39:12 [Warning] [2653632571] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/17 07:39:45 [Warning] [1181849366] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/12/17 07:39:45 tcp:127.0.0.1:53063 accepted tcp:edgedl.me.gvt1.com:80
+2025/12/17 07:39:48 [Warning] [1319678064] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/12/17 07:39:48 tcp:127.0.0.1:53065 accepted tcp:edgedl.me.gvt1.com:80
+2025/12/17 07:39:53 [Warning] [378284626] app/dispatcher: default route for tcp:edgedl.me.gvt1.com:80
+2025/12/17 07:39:53 tcp:127.0.0.1:53070 accepted tcp:edgedl.me.gvt1.com:80
+2025/12/17 07:39:53 [Warning] [2134047120] app/dispatcher: default route for tcp:redirector.gvt1.com:80
+2025/12/17 07:39:53 tcp:127.0.0.1:53072 accepted tcp:redirector.gvt1.com:80
+2025/12/17 07:39:54 tcp:127.0.0.1:53075 accepted tcp:r8---sn-vh5ouxa-hjuk.gvt1.com:80
+2025/12/17 07:39:54 [Warning] [266692310] app/dispatcher: default route for tcp:r8---sn-vh5ouxa-hjuk.gvt1.com:80
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/12/17 08:10:24 [Warning] V2Ray 5.41.0 started
+2025/12/17 08:10:24 tcp:127.0.0.1:53977 rejected  proxy/socks: insufficient header > EOF
+2025/12/17 08:11:25 tcp:127.0.0.1:54169 accepted tcp:www.google.com:443
+2025/12/17 08:11:25 tcp:127.0.0.1:54167 accepted tcp:accounts.google.com:443
+2025/12/17 08:11:25 tcp:127.0.0.1:54161 accepted tcp:clients2.google.com:80
+2025/12/17 08:11:25 [Warning] [3723595905] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/12/17 08:11:25 [Warning] [3381410358] app/dispatcher: default route for tcp:www.google.com:443
+2025/12/17 08:11:25 [Warning] [3866389207] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/12/17 08:11:25 [Warning] [2668452703] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 08:11:25 tcp:127.0.0.1:54187 accepted tcp:iranpaper.ir:443
+2025/12/17 08:11:25 tcp:127.0.0.1:54189 accepted tcp:iranpaper.ir:443
+2025/12/17 08:11:25 [Warning] [4147731190] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 08:11:26 [Warning] [315515131] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 08:11:26 [Warning] [498906138] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/12/17 08:11:26 tcp:127.0.0.1:54211 accepted tcp:iranpaper.ir:443
+2025/12/17 08:11:26 tcp:127.0.0.1:54212 accepted tcp:accounts.google.com:443
+2025/12/17 08:11:30 [Warning] [2258318623] app/dispatcher: default route for tcp:android.clients.google.com:443
+2025/12/17 08:11:30 tcp:127.0.0.1:54226 accepted tcp:android.clients.google.com:443
+2025/12/17 08:11:31 [Warning] [120162159] app/dispatcher: default route for tcp:mtalk.google.com:5228
+2025/12/17 08:11:31 tcp:127.0.0.1:54237 accepted tcp:mtalk.google.com:5228
+2025/12/17 08:11:32 [Warning] [2101815974] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 08:11:32 [Warning] [1673017781] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 08:11:32 tcp:127.0.0.1:54240 accepted tcp:iranpaper.ir:443
+2025/12/17 08:11:32 tcp:127.0.0.1:54239 accepted tcp:iranpaper.ir:443
+2025/12/17 08:11:32 tcp:127.0.0.1:54241 accepted tcp:iranpaper.ir:443
+2025/12/17 08:11:32 [Warning] [4030546273] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 08:11:32 tcp:127.0.0.1:54242 accepted tcp:iranpaper.ir:443
+2025/12/17 08:11:32 [Warning] [246393978] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 08:11:32 [Warning] [3812580907] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/17 08:11:32 tcp:127.0.0.1:54255 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/17 08:11:34 [Warning] [2235778102] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/17 08:11:34 [Warning] [1485303260] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/17 08:11:34 tcp:127.0.0.1:54279 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/17 08:11:34 tcp:127.0.0.1:54280 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/17 08:11:55 [Warning] [1974499368] app/dispatcher: default route for tcp:content-autofill.googleapis.com:443
+2025/12/17 08:11:55 tcp:127.0.0.1:54316 accepted tcp:content-autofill.googleapis.com:443
+2025/12/17 08:12:24 tcp:127.0.0.1:54328 accepted tcp:update.googleapis.com:443
+2025/12/17 08:12:24 [Warning] [4053289333] app/dispatcher: default route for tcp:update.googleapis.com:443
+2025/12/17 08:12:24 tcp:127.0.0.1:54336 accepted tcp:www.goftino.com:443
+2025/12/17 08:12:24 [Warning] [3501191396] app/dispatcher: default route for tcp:www.goftino.com:443
+V2Ray 5.41.0 (V2Fly, a community-driven edition of V2Ray.) Custom (go1.24.2 darwin/amd64)
+A unified platform for anti-censorship.
+2025/12/17 09:04:41 [Warning] V2Ray 5.41.0 started
+2025/12/17 09:04:41 tcp:127.0.0.1:56118 rejected  proxy/socks: insufficient header > EOF
+2025/12/17 09:04:57 tcp:127.0.0.1:56223 accepted tcp:clients2.google.com:80
+2025/12/17 09:04:57 [Warning] [2339420615] app/dispatcher: default route for tcp:clients2.google.com:80
+2025/12/17 09:04:57 tcp:127.0.0.1:56227 accepted tcp:accounts.google.com:443
+2025/12/17 09:04:57 [Warning] [752254645] app/dispatcher: default route for tcp:accounts.google.com:443
+2025/12/17 09:04:57 tcp:127.0.0.1:56228 accepted tcp:www.google.com:443
+2025/12/17 09:04:57 [Warning] [615032686] app/dispatcher: default route for tcp:www.google.com:443
+2025/12/17 09:04:57 [Warning] [2608750907] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 09:04:57 tcp:127.0.0.1:56232 accepted tcp:iranpaper.ir:443
+2025/12/17 09:04:57 [Warning] [2275934099] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 09:04:57 tcp:127.0.0.1:56234 accepted tcp:iranpaper.ir:443
+2025/12/17 09:04:58 [Warning] [746118566] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 09:04:58 tcp:127.0.0.1:56238 accepted tcp:iranpaper.ir:443
+2025/12/17 09:04:59 [Warning] [494267351] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 09:04:59 tcp:127.0.0.1:56244 accepted tcp:iranpaper.ir:443
+2025/12/17 09:04:59 [Warning] [3050465845] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 09:04:59 tcp:127.0.0.1:56245 accepted tcp:iranpaper.ir:443
+2025/12/17 09:04:59 [Warning] [1873354626] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 09:04:59 tcp:127.0.0.1:56246 accepted tcp:iranpaper.ir:443
+2025/12/17 09:04:59 [Warning] [2842996657] app/dispatcher: default route for tcp:iranpaper.ir:443
+2025/12/17 09:04:59 tcp:127.0.0.1:56250 accepted tcp:iranpaper.ir:443
+2025/12/17 09:05:05 tcp:127.0.0.1:56262 accepted tcp:optimizationguide-pa.googleapis.com:443
+2025/12/17 09:05:05 [Warning] [929608638] app/dispatcher: default route for tcp:optimizationguide-pa.googleapis.com:443
+2025/12/17 09:05:57 tcp:127.0.0.1:56495 accepted tcp:update.googleapis.com:443
+2025/12/17 09:05:57 [Warning] [4166314334] app/dispatcher: default route for tcp:update.googleapis.com:443
