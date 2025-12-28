@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  bot:
+    build: .
+    container_name: dastyar-bot
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - API_HOST=0.0.0.0
+      - CHROME_HEADLESS=1
+      - CHROMEDRIVER_PATH=/usr/bin/chromedriver
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data:/app/data
+      - ./run_logs:/app/run_logs
+      - ./v2ray:/app/v2ray
+    ports:
+      - "127.0.0.1:8787:8787"
+
+  caddy:
+    image: caddy:2
+    container_name: dastyar-proxy
+    restart: unless-stopped
+    profiles:
+      - proxy
+    depends_on:
+      - bot
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - PUBLIC_DOMAIN=${PUBLIC_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

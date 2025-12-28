@@ -29,11 +29,31 @@ _PROCS: Dict[str, subprocess.Popen] = {}
 _CONF_HASH: Dict[str, str] = {}
 
 
-def _detect_archive_url() -> str:
+def _archive_candidates() -> list[str]:
+    system = (platform.system() or "").lower()
     arch = (platform.machine() or "").lower()
-    if "arm" in arch:
-        return "https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-macos-arm64.zip"
-    return "https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-macos-64.zip"
+    is_arm = "arm" in arch or "aarch64" in arch
+    base = "https://github.com/v2fly/v2ray-core/releases/latest/download/"
+
+    if "linux" in system:
+        if is_arm:
+            names = ["v2ray-linux-arm64-v8a.zip", "v2ray-linux-arm64.zip"]
+        else:
+            names = ["v2ray-linux-64.zip", "v2ray-linux-amd64.zip"]
+    elif "darwin" in system or "mac" in system:
+        if is_arm:
+            names = ["v2ray-macos-arm64-v8a.zip", "v2ray-macos-arm64.zip"]
+        else:
+            names = ["v2ray-macos-64.zip"]
+    elif "windows" in system:
+        if is_arm:
+            names = ["v2ray-windows-arm64-v8a.zip", "v2ray-windows-arm64.zip"]
+        else:
+            names = ["v2ray-windows-64.zip"]
+    else:
+        names = ["v2ray-linux-64.zip"]
+
+    return [base + name for name in names]
 
 
 def _extract_binary_from_zip(data: bytes) -> None:
@@ -54,14 +74,19 @@ def ensure_v2ray_installed() -> Path:
     binary = BIN_DIR / BIN_NAME
     if binary.exists():
         return binary
-    url = _detect_archive_url()
-    LOGGER.info("downloading_v2ray | url=%s", url)
-    with urllib.request.urlopen(url) as resp:
-        data = resp.read()
-    _extract_binary_from_zip(data)
-    if not binary.exists():
-        raise RuntimeError("Failed to install v2ray binary")
-    return binary
+    last_err: Optional[Exception] = None
+    for url in _archive_candidates():
+        try:
+            LOGGER.info("downloading_v2ray | url=%s", url)
+            with urllib.request.urlopen(url) as resp:
+                data = resp.read()
+            _extract_binary_from_zip(data)
+            if binary.exists():
+                return binary
+        except Exception as exc:
+            last_err = exc
+            LOGGER.warning("v2ray_download_failed | url=%s err=%s", url, exc)
+    raise RuntimeError("Failed to install v2ray binary") from last_err
 
 
 def _write_config(name: str, config_text: str) -> Path:

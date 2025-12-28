@@ -115,6 +115,7 @@ class Config:
 
     ZARINPAL_URL: str = "https://zarinp.al/mam"
     ADMIN_USERNAME: str = "H_koosha"
+    ADMIN_USER_ID: int = int(os.environ.get("ADMIN_USER_ID", "0") or 0)
 
     EXTRA_EMAIL_DELIVERY_FEE: int = 10_000
 
