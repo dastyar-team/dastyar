@@ -1,5 +1,5 @@
-# dastyar
-# Dastyar
+
+# Dastyar - دستیار
 
 Telegram bot for DOI processing and Open Access delivery. It fetches metadata (Crossref/OpenAlex),
 classifies papers (Groq optional), attempts Open Access PDF retrieval, and sends results via Telegram.
