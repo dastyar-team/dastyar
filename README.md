@@ -1,5 +1,4 @@
-
-# Dastyar - دستیار
+# Dastyar
 
 Telegram bot for DOI processing and Open Access delivery. It fetches metadata (Crossref/OpenAlex),
 classifies papers (Groq optional), attempts Open Access PDF retrieval, and sends results via Telegram.
@@ -46,14 +45,21 @@ docker compose --profile proxy up -d --build
 Make sure ports 80/443 are open.
 
 ## One-Command Install (Ubuntu 22.04 + Docker)
-This script installs Docker, pulls the repo, asks for key config values, and starts the bot:
+This script installs Docker, pulls the repo, asks for key config values, and starts the bot.
+
+Note: this repository is private. Use one of the methods below.
+
+### Method A: GitHub token (HTTPS)
 ```bash
-curl -fsSL https://raw.githubusercontent.com/USER/REPO/main/scripts/install_ubuntu_22.sh | sudo bash
+curl -fsSL -H "Authorization: token <TOKEN>" \
+  https://raw.githubusercontent.com/hakam788/dastyar/main/scripts/install_ubuntu_22.sh | \
+  sudo env GITHUB_TOKEN="<TOKEN>" bash
 ```
 
-If you want to override the repo URL:
+### Method B: SSH
 ```bash
-curl -fsSL https://raw.githubusercontent.com/USER/REPO/main/scripts/install_ubuntu_22.sh | sudo env REPO_URL="https://github.com/USER/REPO.git" bash
+git clone git@github.com:hakam788/dastyar.git
+sudo env REPO_URL="git@github.com:hakam788/dastyar.git" bash dastyar/scripts/install_ubuntu_22.sh
 ```
 
 ## Local Run (Without Docker)
@@ -109,4 +115,4 @@ All endpoints accept JSON POST:
 3) Open a PR with a clear description and screenshots/logs if relevant.
 
 ## Contributors
-- TBD (add contributor names here)
+- hakam788
