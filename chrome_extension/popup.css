@@ -65,4 +65,3 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:14px/1.
 
 .footer{display:flex;gap:8px;align-items:center;margin-top:10px}
 .hidden{display:none!important}
-
