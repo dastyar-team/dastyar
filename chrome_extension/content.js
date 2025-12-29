@@ -96,4 +96,3 @@ async function updateFab(fab) {
 const fab = createFab();
 updateFab(fab);
 setInterval(() => updateFab(fab), 8000);
-
