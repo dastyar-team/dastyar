@@ -46,7 +46,7 @@ except Exception:
 from selenium import webdriver   # لازم برای Type Hint و استفاده در جاهای مختلف
 
 import requests
-from contextlib import suppress
+from contextlib import suppress, contextmanager
 
 try:
     import resend  # type: ignore
@@ -358,7 +358,7 @@ def _db_insert_otp(
     last_sent_at: datetime,
     user_id: Optional[int],
 ) -> int:
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             """
             INSERT INTO email_otps (email, code_hash, expires_at, attempts, last_sent_at, created_at, verified_at, user_id)
@@ -385,7 +385,7 @@ def _db_update_otp_send(
     last_sent_at: datetime,
     user_id: Optional[int],
 ) -> None:
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             """
             UPDATE email_otps
@@ -409,7 +409,7 @@ def _db_update_otp_send(
 
 
 def _db_increment_otp_attempts(otp_id: int) -> int:
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             "UPDATE email_otps SET attempts = COALESCE(attempts, 0) + 1 WHERE id=?",
             (int(otp_id),),
@@ -422,7 +422,7 @@ def _db_increment_otp_attempts(otp_id: int) -> int:
 
 
 def _db_mark_otp_verified(otp_id: int, verified_at: datetime) -> None:
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             "UPDATE email_otps SET verified_at=? WHERE id=?",
             (_dt_to_str(verified_at), int(otp_id)),
@@ -431,7 +431,7 @@ def _db_mark_otp_verified(otp_id: int, verified_at: datetime) -> None:
 
 
 def _db_delete_otp(otp_id: int) -> None:
-    with _conn:
+    with _db_write():
         cur = _db_execute("DELETE FROM email_otps WHERE id=?", (int(otp_id),))
         cur.close()
 
@@ -446,7 +446,7 @@ def _db_restore_otp(
     verified_at: Optional[datetime],
     user_id: Optional[int],
 ) -> None:
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             """
             UPDATE email_otps
@@ -886,6 +886,15 @@ _conn = _connect_mysql() if DB_IS_MYSQL else _connect_sqlite()
 def _normalize_sql(sql: str) -> str:
     return sql.replace("?", "%s") if DB_IS_MYSQL else sql
 
+@contextmanager
+def _db_write():
+    if DB_IS_MYSQL:
+        # PyMySQL connection context manager closes the connection; avoid that.
+        yield
+    else:
+        with _conn:
+            yield
+
 def _db_execute(sql: str, params: Optional[Any] = None, *, many: bool = False):
     sql = _normalize_sql(sql)
     if DB_IS_MYSQL:
@@ -1038,7 +1047,7 @@ def db_init() -> None:
             cur = _db_execute(stmt)
             cur.close()
     else:
-        with _conn:
+        with _db_write():
             _conn.executescript("""
             PRAGMA journal_mode=WAL;
             PRAGMA synchronous=NORMAL;
@@ -1183,7 +1192,7 @@ def _ensure_column(table: str, column: str, coltype: str) -> None:
     cur.close()
     if column not in cols:
         try:
-            with _conn:
+            with _db_write():
                 cur = _db_execute(f"ALTER TABLE {table} ADD COLUMN {column} {coltype}")
                 cur.close()
         except Exception as e:
@@ -1203,7 +1212,7 @@ def db_upsert_user(user_id: int, username: Optional[str]) -> None:
             VALUES (?, ?)
             ON CONFLICT(user_id) DO UPDATE SET username=excluded.username, updated_at=CURRENT_TIMESTAMP
         """
-    with _conn:
+    with _db_write():
         cur = _db_execute(sql, (user_id, username or None))
         cur.close()
 
@@ -1223,12 +1232,12 @@ def db_get_user_by_email(email: str) -> Dict[str, Any]:
     return dict(row) if row else {}
 
 def db_set_seen_welcome(user_id: int) -> None:
-    with _conn:
+    with _db_write():
         cur = _db_execute("UPDATE users SET seen_welcome=1, updated_at=CURRENT_TIMESTAMP WHERE user_id=?", (user_id,))
         cur.close()
 
 def db_set_email(user_id: int, email: str) -> None:
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             "UPDATE users SET email=?, email_verified=0, updated_at=CURRENT_TIMESTAMP WHERE user_id=?",
             (email, user_id),
@@ -1238,7 +1247,7 @@ def db_set_email(user_id: int, email: str) -> None:
 
 def db_set_email_verified(user_id: int, verified: bool = True) -> None:
     val = 1 if verified else 0
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             "UPDATE users SET email_verified=?, updated_at=CURRENT_TIMESTAMP WHERE user_id=?",
             (val, int(user_id)),
@@ -1246,7 +1255,7 @@ def db_set_email_verified(user_id: int, verified: bool = True) -> None:
         cur.close()
 
 def db_set_delivery(user_id: int, method: str) -> None:
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             "UPDATE users SET delivery_method=?, delivery_chosen=1, updated_at=CURRENT_TIMESTAMP WHERE user_id=?",
             (method, user_id),
@@ -1254,7 +1263,7 @@ def db_set_delivery(user_id: int, method: str) -> None:
         cur.close()
 
 def db_set_plan(user_id: int, ptype: str, label: str, price: int, status: str, note: str) -> None:
-    with _conn:
+    with _db_write():
         cur = _db_execute("""
             UPDATE users
                SET plan_type=?, plan_label=?, plan_price=?, plan_status=?, plan_note=?, updated_at=CURRENT_TIMESTAMP
@@ -1282,7 +1291,7 @@ def db_add_dois(user_id: int, dois: List[str]) -> int:
     if not normalized:
         return 0
     if DB_IS_MYSQL:
-        with _conn:
+        with _db_write():
             cur = _db_execute(
                 "INSERT IGNORE INTO dois (user_id, doi) VALUES (?, ?)",
                 [(user_id, d) for d in normalized],
@@ -1293,7 +1302,7 @@ def db_add_dois(user_id: int, dois: List[str]) -> int:
         return count
 
     before = _conn.total_changes
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             "INSERT OR IGNORE INTO dois (user_id, doi) VALUES (?, ?)",
             [(user_id, d) for d in normalized],
@@ -1331,7 +1340,7 @@ def db_upsert_meta(user_id: int, doi: str, *, title: Optional[str], year: Option
                 error=excluded.error,
                 updated_at=CURRENT_TIMESTAMP
         """
-    with _conn:
+    with _db_write():
         cur = _db_execute(sql, (user_id, doi, title, year, category, source, status, (error or None)))
         cur.close()
 
@@ -1353,7 +1362,7 @@ def db_set_new_token(user_id: int) -> str:
         exists = cur.fetchone()
         cur.close()
         if not exists:
-            with _conn:
+            with _db_write():
                 cur = _db_execute(
                     "UPDATE users SET user_token=?, token_created_at=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP WHERE user_id=?",
                     (tok, user_id),
@@ -1387,7 +1396,7 @@ def db_set_setting(key: str, value: str) -> None:
             "INSERT INTO settings (key, value) VALUES (?, ?) "
             "ON CONFLICT(key) DO UPDATE SET value = excluded.value"
         )
-    with _conn:
+    with _db_write():
         cur = _db_execute(sql, (key, value))
         cur.close()
 
@@ -1421,7 +1430,7 @@ def db_create_payment_request(
     code = _generate_payment_code()
     final_total = int(total_amount) if total_amount is not None else int(amount)
     final_wallet = int(wallet_used or 0)
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             """
             INSERT INTO payment_requests
@@ -1471,7 +1480,7 @@ def db_update_payment_receipt(
     file_unique_id: str,
     message_id: int,
 ) -> None:
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             """
             UPDATE payment_requests
@@ -1493,7 +1502,7 @@ def db_update_payment_receipt(
         cur.close()
 
 def db_set_payment_review_message(payment_id: int, chat_id: int, message_id: int) -> None:
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             """
             UPDATE payment_requests
@@ -1513,7 +1522,7 @@ def db_set_payment_status(
     admin_id: Optional[int] = None,
     admin_reason: Optional[str] = None,
 ) -> None:
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             """
             UPDATE payment_requests
@@ -1529,7 +1538,7 @@ def db_set_payment_status(
 
 # ---- Wallet ----
 def db_add_wallet_balance(user_id: int, delta: int) -> None:
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             """
             UPDATE users
@@ -1543,7 +1552,7 @@ def db_add_wallet_balance(user_id: int, delta: int) -> None:
 
 # ---- Quotas ----
 def db_add_quota(user_id: int, *, free_add: int = 0, paid_add: int = 0) -> None:
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             """
             UPDATE users
@@ -1566,7 +1575,7 @@ def db_add_quota_by_email(email: str, *, free_add: int = 0, paid_add: int = 0) -
 
 
 def db_inc_used(user_id: int, *, free_inc: int = 0, paid_inc: int = 0) -> None:
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             """
             UPDATE users
@@ -1627,7 +1636,7 @@ def db_create_download_link(
     for _ in range(10):
         token = secrets.token_urlsafe(24)
         try:
-            with _conn:
+            with _db_write():
                 cur = _db_execute(
                     "INSERT INTO download_links (token, user_id, file_path, filename, created_at, expires_at) "
                     "VALUES (?, ?, ?, ?, ?, ?)",
@@ -1651,7 +1660,7 @@ def db_get_download_link(token: str) -> Dict[str, Any]:
 def db_mark_download_link_used(token: str, *, used_by: Optional[int] = None) -> None:
     if not token:
         return
-    with _conn:
+    with _db_write():
         cur = _db_execute(
             "UPDATE download_links SET used_at=?, used_by=? WHERE token=?",
             (int(time.time()), int(used_by) if used_by else None, token),
@@ -1661,7 +1670,7 @@ def db_mark_download_link_used(token: str, *, used_by: Optional[int] = None) -> 
 def db_delete_download_link(token: str) -> None:
     if not token:
         return
-    with _conn:
+    with _db_write():
         cur = _db_execute("DELETE FROM download_links WHERE token=?", (token,))
         cur.close()
 
@@ -1690,7 +1699,7 @@ def db_cleanup_download_links(*, include_used: bool = True) -> int:
     if not tokens:
         return 0
     placeholders = ",".join(["?"] * len(tokens))
-    with _conn:
+    with _db_write():
         cur = _db_execute(f"DELETE FROM download_links WHERE token IN ({placeholders})", tuple(tokens))
         count = int(cur.rowcount or 0)
         cur.close()
