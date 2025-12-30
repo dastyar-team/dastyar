@@ -888,6 +888,27 @@ def _normalize_sql(sql: str) -> str:
 
 def _db_execute(sql: str, params: Optional[Any] = None, *, many: bool = False):
     sql = _normalize_sql(sql)
+    if DB_IS_MYSQL:
+        global _conn
+
+        def _run() -> Any:
+            cur = _conn.cursor()
+            if many:
+                cur.executemany(sql, params or [])
+            else:
+                cur.execute(sql, params or ())
+            return cur
+
+        try:
+            if _conn is None or not getattr(_conn, "open", False):
+                _conn = _connect_mysql()
+            else:
+                _conn.ping(reconnect=True)
+            return _run()
+        except (pymysql.err.InterfaceError, pymysql.err.OperationalError):
+            _conn = _connect_mysql()
+            return _run()
+
     cur = _conn.cursor()
     if many:
         cur.executemany(sql, params or [])
