@@ -49,10 +49,11 @@ Make sure ports 80/443 are open.
 
 ## One-Command Install (Ubuntu 22.04 + Docker)
 This script installs Docker, pulls the repo, asks for key config values, and starts the bot.
+Interactive prompts require a TTY; if you see no prompts, download the script and run it with `sudo bash`.
 
 ### Public Repo (One Line)
 ```bash
-curl -fsSL https://raw.githubusercontent.com/dastyar-team/dastyar/main/scripts/install_ubuntu_22.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/dastyar-team/dastyar/main/install.sh | sudo bash
 ```
 
 ### SSH (Optional)
@@ -66,6 +67,7 @@ Set variables inline to skip prompts:
 ```bash
 curl -fsSL https://raw.githubusercontent.com/dastyar-team/dastyar/main/scripts/install_ubuntu_22.sh | \
   sudo env \
+  ALLOW_NONINTERACTIVE=1 \
   TELEGRAM_BOT_TOKEN="<MAIN_BOT_TOKEN>" \
   SCINET_GROUP_CHAT_ID="<SCINET_GROUP_CHAT_ID>" \
   DOWNLOAD_BOT_TOKEN="<DOWNLOAD_BOT_TOKEN>" \
