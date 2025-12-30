@@ -5,11 +5,16 @@ services:
     build: .
     container_name: dastyar-bot
     restart: unless-stopped
+    depends_on:
+      - db
     env_file: .env
     environment:
       - API_HOST=0.0.0.0
       - CHROME_HEADLESS=1
       - CHROMEDRIVER_PATH=/usr/bin/chromedriver
+      - DB_TYPE=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
       - PYTHONUNBUFFERED=1
     volumes:
       - ./data:/app/data
@@ -17,6 +22,48 @@ services:
       - ./v2ray:/app/v2ray
     ports:
       - "127.0.0.1:8787:8787"
+
+  download_bot:
+    build: .
+    container_name: dastyar-download-bot
+    restart: unless-stopped
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      - DB_TYPE=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - PYTHONUNBUFFERED=1
+    command: ["python", "-u", "doi/download_bot.py"]
+    volumes:
+      - ./data:/app/data
+      - ./run_logs:/app/run_logs
+
+  db:
+    image: mysql:8.0
+    container_name: dastyar-db
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: dastyar-phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=${DB_ROOT_PASSWORD}
+    ports:
+      - "127.0.0.1:8081:80"
 
   caddy:
     image: caddy:2
@@ -39,3 +86,4 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+  mysql_data:

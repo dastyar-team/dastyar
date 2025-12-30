@@ -1,0 +1,27 @@
+2025-12-30 16:12:30 | INFO | doi_bot | === Bot starting ===
+2025-12-30 16:12:32 | INFO | doi_bot | groq_models | count=22 sample=['whisper-large-v3-turbo', 'playai-tts', 'qwen/qwen3-32b', 'meta-llama/llama-prompt-guard-2-86m', 'moonshotai/kimi-k2-instruct', 'openai/gpt-oss-20b', 'llama-3.3-70b-versatile', 'openai/gpt-oss-120b']
+C:\Users\moham\Downloads\Compressed\dastyar-main\doi\mainbot.py:2271: PTBUserWarning: If 'per_message=False', 'CallbackQueryHandler' will not be tracked for every message. Read this FAQ entry to learn more about the per_* settings: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Frequently-Asked-Questions#what-do-the-per_-settings-in-conversationhandler-do.
+  doi_conv = ConversationHandler(
+C:\Users\moham\Downloads\Compressed\dastyar-main\doi\ui_email_verification.py:352: PTBUserWarning: If 'per_message=False', 'CallbackQueryHandler' will not be tracked for every message. Read this FAQ entry to learn more about the per_* settings: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Frequently-Asked-Questions#what-do-the-per_-settings-in-conversationhandler-do.
+  return ConversationHandler(
+C:\Users\moham\Downloads\Compressed\dastyar-main\doi\mainbot.py:2290: PTBUserWarning: If 'per_message=False', 'CallbackQueryHandler' will not be tracked for every message. Read this FAQ entry to learn more about the per_* settings: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Frequently-Asked-Questions#what-do-the-per_-settings-in-conversationhandler-do.
+  scihub_conv = ConversationHandler(
+C:\Users\moham\Downloads\Compressed\dastyar-main\doi\mainbot.py:2302: PTBUserWarning: If 'per_message=False', 'CallbackQueryHandler' will not be tracked for every message. Read this FAQ entry to learn more about the per_* settings: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Frequently-Asked-Questions#what-do-the-per_-settings-in-conversationhandler-do.
+  dl_conv = ConversationHandler(
+C:\Users\moham\Downloads\Compressed\dastyar-main\doi\mainbot.py:2339: PTBUserWarning: If 'per_message=False', 'CallbackQueryHandler' will not be tracked for every message. Read this FAQ entry to learn more about the per_* settings: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Frequently-Asked-Questions#what-do-the-per_-settings-in-conversationhandler-do.
+  payment_conv = ConversationHandler(
+C:\Users\moham\Downloads\Compressed\dastyar-main\doi\mainbot.py:2365: PTBUserWarning: If 'per_message=False', 'CallbackQueryHandler' will not be tracked for every message. Read this FAQ entry to learn more about the per_* settings: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Frequently-Asked-Questions#what-do-the-per_-settings-in-conversationhandler-do.
+  submit_conv = ConversationHandler(
+C:\Users\moham\Downloads\Compressed\dastyar-main\doi\mainbot.py:2379: PTBUserWarning: If 'per_message=False', 'CallbackQueryHandler' will not be tracked for every message. Read this FAQ entry to learn more about the per_* settings: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Frequently-Asked-Questions#what-do-the-per_-settings-in-conversationhandler-do.
+  vpn_conv = ConversationHandler(
+C:\Users\moham\Downloads\Compressed\dastyar-main\doi\mainbot.py:2422: PTBUserWarning: If 'per_message=False', 'CallbackQueryHandler' will not be tracked for every message. Read this FAQ entry to learn more about the per_* settings: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Frequently-Asked-Questions#what-do-the-per_-settings-in-conversationhandler-do.
+  charge_conv = ConversationHandler(
+C:\Users\moham\Downloads\Compressed\dastyar-main\doi\mainbot.py:2435: PTBUserWarning: If 'per_message=False', 'CallbackQueryHandler' will not be tracked for every message. Read this FAQ entry to learn more about the per_* settings: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Frequently-Asked-Questions#what-do-the-per_-settings-in-conversationhandler-do.
+  store_conv = ConversationHandler(
+2025-12-30 16:12:40 | INFO | doi_bot | api_server_started | host=127.0.0.1 port=8787
+2025-12-30 16:13:05 | INFO | doi_bot | DBG | user_id=348638594 username=Mzareg
+2025-12-30 16:13:34 | INFO | doi_bot.sciencedirect | scidir_warmup_start | total=3 | active=1 | delay_first=(30, 60)
+2025-12-30 16:13:45 | INFO | doi_bot | scihub_driver_initialized
+2025-12-30 16:14:13 | INFO | doi_bot.v2ray | v2ray_share_converted | region=iran
+2025-12-30 16:14:13 | INFO | doi_bot.v2ray | v2ray_starting | region=iran proxy=socks5://127.0.0.1:21870
+2025-12-30 16:14:13 | WARNING | doi_bot | scidir_warmup_failed | err=[WinError 2] The system cannot find the file specified

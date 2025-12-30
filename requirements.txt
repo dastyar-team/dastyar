@@ -3,6 +3,7 @@ python-telegram-bot[job-queue]==22.5
 python-dotenv
 aiohttp>=3.9.0
 requests>=2.31.0
+resend
 
 # AI / HTTP
 httpx==0.28.1
@@ -18,3 +19,6 @@ reportlab==4.4.6
 
 # Optional captchas
 twocaptcha
+
+# MySQL driver
+pymysql>=1.1.0

@@ -67,7 +67,10 @@ async def cors_middleware(request: web.Request, handler):
 
 
 def _auth_user(email: str, code: str) -> Tuple[Optional[int], Optional[Dict[str, Any]]]:
-    user_id = verify_email_code(email, code)
+    result = verify_email_code(email, code)
+    if not result.get("ok"):
+        return None, None
+    user_id = result.get("user_id")
     if not user_id:
         return None, None
     user = db_get_user(int(user_id))

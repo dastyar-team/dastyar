@@ -32,19 +32,24 @@ from telegram.ext import (
 from downloadmain import (  # noqa: F401  # type: ignore
     CFG, logger, catlog,
     db_init, db_upsert_user, db_get_user, db_set_seen_welcome, db_set_email, db_set_delivery,
-    db_set_plan, db_count_dois, db_add_dois, db_get_or_create_token, db_set_new_token,
+    db_set_plan, db_add_quota, db_count_dois, db_add_dois, db_get_or_create_token, db_set_new_token,
     db_get_setting, db_set_setting,
+    db_create_payment_request, db_get_payment_request, db_get_open_payment_request,
+    db_update_payment_receipt, db_set_payment_review_message, db_set_payment_status,
+    PAYMENT_STATUS_AWAITING, PAYMENT_STATUS_PENDING, PAYMENT_STATUS_APPROVED, PAYMENT_STATUS_REJECTED,
+    db_add_wallet_balance,
     normalize_doi,
-    save_user_email_code,
+    request_email_verification, verify_email_code,
     db_add_quota_by_email, db_get_user_by_email, db_get_quota_status,
     vpn_load_configs, vpn_add_config, vpn_remove_config, vpn_set_active, vpn_ping_all,
     _get_scihub_driver, _build_chrome_driver, _maybe_solve_recaptcha,
-    process_dois_batch, groq_health_check_sync, ensure_v2ray_running,
+    process_dois_batch, groq_health_check_sync, ensure_v2ray_running, CB_DL_DONE,
     iranpaper_accounts_ordered, iranpaper_set_active, iranpaper_set_primary, iranpaper_set_vpn,
     set_activation, is_activation_on, iranpaper_vpn_map,
 )
 from downloaders.sciencedirect import warmup_accounts
 from telegram.request import HTTPXRequest
+from doi.ui_email_verification import build_email_verification_conversation, show_profile_card
 # Sci-Net automation
 try:
     from scinet import (
@@ -80,7 +85,15 @@ WELCOME_TEXT: Final[str] = "👋 به ربات doi خوش اومدید"
 CB_MENU_SEND_DOI   = "menu:send_doi"
 CB_MENU_ACCOUNT    = "menu:account"
 CB_MENU_TOPUP      = "menu:topup"
+CB_MENU_WALLET_TOPUP = "menu:wallet_topup"
 CB_MENU_ROOT       = "menu:root"
+CB_MENU_PLAGIARISM = "menu:plagiarism"
+
+CB_PLAGIARISM_ONLY = "plag:only"
+CB_PLAGIARISM_AI   = "plag:ai"
+CB_PLAGIARISM_PAY_PREFIX = "plag:pay:"
+CB_PLAGIARISM_WALLET_PREFIX = "plag:wallet:"
+CB_PLAGIARISM_SUBMIT_PREFIX = "plag:submit:"
 
 # --- پنل ادمین
 CB_ADMIN_USER_MENU = "admin:user_menu"   # منوی کاربر عادی
@@ -89,6 +102,14 @@ CB_ADMIN_VPN       = "admin:vpn"
 CB_ADMIN_ACCOUNTS  = "admin:accounts"
 CB_ADMIN_ACTIVATION= "admin:activation"
 CB_ADMIN_CHARGE    = "admin:charge"
+CB_ADMIN_STORE     = "admin:store"
+CB_STORE_SET_PRICE_PLAG = "store:set_price_plag"
+CB_STORE_SET_PRICE_AI   = "store:set_price_ai"
+CB_STORE_SET_CARD       = "store:set_card"
+CB_STORE_SET_GROUP      = "store:set_group"
+
+CB_PAYMENT_APPROVE_PREFIX = "pay:approve:"
+CB_PAYMENT_REJECT_PREFIX  = "pay:reject:"
 CB_BACK_ADMIN_ROOT = "admin:back_root"   # بازگشت از زیرمنوها
 
 # --- زیرمنوی لینک‌ها
@@ -109,6 +130,8 @@ CB_NORMAL_40       = "select:normal:40"
 CB_NORMAL_100      = "select:normal:100"
 CB_PREMIUM_1M      = "select:premium:1m"
 CB_PREMIUM_3M      = "select:premium:3m"
+CB_PLAN_PAY_PREFIX = "plan:pay:"
+CB_PLAN_WALLET_PREFIX = "plan:wallet:"
 CB_CONFIRM         = "confirm"
 CB_BACK            = "back"
 CB_BACK_ROOT       = "back_root"
@@ -141,9 +164,98 @@ WAITING_VPN_ASSIGN_SLOT = 35
 WAITING_CHARGE_EMAIL: Final[int] = 50
 WAITING_CHARGE_PAID:  Final[int] = 51
 WAITING_CHARGE_FREE:  Final[int] = 52
+WAITING_STORE_PRICE_PLAG: Final[int] = 60
+WAITING_STORE_PRICE_AI:   Final[int] = 61
+WAITING_STORE_CARD:       Final[int] = 62
+WAITING_STORE_GROUP:      Final[int] = 63
+WAITING_PAYMENT_RECEIPT:  Final[int] = 70
+WAITING_PLAGIARISM_SUBMIT: Final[int] = 71
+WAITING_WALLET_TOPUP_AMOUNT: Final[int] = 72
 DOI_REGEX   = re.compile(r"\b(10\.\d{4,9}/[-._;()/:A-Z0-9]+)\b", re.IGNORECASE)
 EMAIL_REGEX = re.compile(r"^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$")
+
+STORE_PRICE_PLAG_KEY = "STORE_PRICE_PLAGIARISM"
+STORE_PRICE_PLAG_AI_KEY = "STORE_PRICE_PLAGIARISM_AI"
+STORE_CARD_KEY = "STORE_CARD_NUMBER"
+STORE_GROUP_KEY = "STORE_PAYMENT_GROUP_CHAT_ID"
+
+PLAGIARISM_PRODUCT = "plagiarism"
+PLAGIARISM_AI_PRODUCT = "plagiarism_ai"
+WALLET_TOPUP_PRODUCT = "wallet_topup"
+PLAN_PRODUCT_PREFIX = "plan:"
+
+PLAGIARISM_PRODUCTS = {
+    PLAGIARISM_PRODUCT: {"label": "چک پلاژياریسم", "price_key": STORE_PRICE_PLAG_KEY},
+    PLAGIARISM_AI_PRODUCT: {"label": "چک پلاژياریسم و AI", "price_key": STORE_PRICE_PLAG_AI_KEY},
+}
+
+PLAN_PRODUCTS = {
+    "normal_40": {
+        "label": "🧰 پلن معمولی — ۴۰ مقاله (اعتبار ۱ سال)",
+        "base_price": 240000,
+        "quota_paid": 40,
+        "note": "اعتبار ۱ ساله",
+    },
+    "normal_100": {
+        "label": "🧰 پلن معمولی — ۱۰۰ مقاله (اعتبار ۱ سال)",
+        "base_price": 500000,
+        "quota_paid": 100,
+        "note": "اعتبار ۱ ساله",
+    },
+    "premium_1m": {
+        "label": "⭐️ پریمیوم — ۱ ماه (۱۵ مقاله در روز)",
+        "base_price": 240000,
+        "quota_paid": 450,
+        "note": "۱۵ مقاله/روز",
+    },
+    "premium_3m": {
+        "label": "⭐️ پریمیوم — ۳ ماه (۱۵ مقاله در روز)",
+        "base_price": 600000,
+        "quota_paid": 1350,
+        "note": "۱۵ مقاله/روز",
+    },
+}
+
+PENDING_PAYMENT_KEY = "pending_payment_id"
+PENDING_PAYMENT_PRODUCT_KEY = "pending_payment_product"
+PENDING_REJECT_KEY = "pending_reject_payment_id"
+PENDING_REJECT_MSG_KEY = "pending_reject_message"
+PENDING_SUBMISSION_KEY = "pending_submission_payment_id"
 # -----------------
+
+
+def _plan_product_key(plan_type: str) -> str:
+    return f"{PLAN_PRODUCT_PREFIX}{plan_type}"
+
+
+def _plan_type_from_product_key(product_key: str) -> Optional[str]:
+    if product_key.startswith(PLAN_PRODUCT_PREFIX):
+        return product_key[len(PLAN_PRODUCT_PREFIX):]
+    return None
+
+
+def _plan_info(plan_type: str) -> Optional[Dict[str, Any]]:
+    return PLAN_PRODUCTS.get(plan_type)
+
+
+def _plan_label(plan_type: str) -> str:
+    info = _plan_info(plan_type)
+    return info["label"] if info else "نامشخص"
+
+
+def _plan_base_price(plan_type: str) -> int:
+    info = _plan_info(plan_type)
+    return int(info["base_price"]) if info else 0
+
+
+def _plan_quota_paid(plan_type: str) -> int:
+    info = _plan_info(plan_type)
+    return int(info.get("quota_paid") or 0) if info else 0
+
+
+def _plan_note(plan_type: str) -> str:
+    info = _plan_info(plan_type)
+    return str(info.get("note") or "") if info else ""
 
 
 
@@ -156,23 +268,14 @@ def _valid_email(s: Optional[str]) -> bool:
     return bool(s and EMAIL_REGEX.match(s))
 
 def _valid_email_code(code: str) -> bool:
-    c = (code or "").strip()
-    if len(c) != 6:
-        return False
-    if not c.isalnum():
-        return False
-    letters = sum(1 for ch in c if ch.isalpha())
-    digits = sum(1 for ch in c if ch.isdigit())
-    return letters == 1 and digits == 5
+    c = _normalize_digits(code).strip()
+    return len(c) == 6 and c.isdigit()
 
 def _email_code_rules_text() -> str:
     return (
-        "🔐 <b>رمز ۶ کاراکتری</b>\n"
-        "لطفاً یک رمز <b>۶ کاراکتری</b> بفرستید که:\n"
-        "• دقیقاً <b>۵ رقم</b> داشته باشد\n"
-        "• دقیقاً <b>۱ حرف انگلیسی</b> داشته باشد\n"
-        "• فقط از حروف انگلیسی و اعداد استفاده شود (بدون فاصله)\n"
-        "نمونه: <code>12A345</code>\n\n"
+        "📧 <b>کد تایید ارسال شد</b>\n"
+        "کد ۶ رقمی ارسال‌شده به ایمیل را وارد کنید.\n"
+        "اعتبار کد: ۱۰ دقیقه\n\n"
         "برای انصراف: /cancel"
     )
 
@@ -203,6 +306,55 @@ def ensure_user(user_id: int, username: Optional[str]) -> Dict[str, Any]:
     db_upsert_user(user_id, username)
     return db_get_user(user_id)
 
+def _format_price_toman(price: Optional[int]) -> str:
+    if not isinstance(price, int) or price <= 0:
+        return "نامشخص"
+    return f"{price:,}".replace(",", "٬")
+
+
+_DIGIT_TRANS = str.maketrans("۰۱۲۳۴۵۶۷۸۹", "0123456789")
+
+
+def _normalize_digits(text: str) -> str:
+    return (text or "").translate(_DIGIT_TRANS)
+
+
+def _parse_amount(text: str) -> Optional[int]:
+    s = _normalize_digits(text).replace(",", "").replace("٬", "").strip()
+    if not s.isdigit():
+        return None
+    n = int(s)
+    return n if n > 0 else None
+
+def _get_store_price(key: str, default: int) -> int:
+    raw = db_get_setting(key)
+    if raw is None:
+        return int(default or 0)
+    try:
+        return int(raw)
+    except Exception:
+        return int(default or 0)
+
+def _get_store_card_number() -> str:
+    raw = db_get_setting(STORE_CARD_KEY)
+    card = (raw if raw is not None else getattr(CFG, "STORE_CARD_NUMBER", "")).strip()
+    return card
+
+def _get_store_group_id() -> int:
+    raw = db_get_setting(STORE_GROUP_KEY)
+    if raw is None:
+        return int(getattr(CFG, "PAYMENT_GROUP_CHAT_ID", 0) or 0)
+    try:
+        return int(raw)
+    except Exception:
+        return 0
+
+def _format_card_number(card: str) -> str:
+    digits = re.sub(r"\D", "", card or "")
+    if len(digits) == 16:
+        return "-".join(digits[i:i+4] for i in range(0, 16, 4))
+    return card
+
 # =========================
 # Keyboards
 # =========================
@@ -211,21 +363,57 @@ def main_menu_kb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("📎 ارسال doi", callback_data=CB_MENU_SEND_DOI)],
         [InlineKeyboardButton("👤 حساب کاربری", callback_data=CB_MENU_ACCOUNT)],
-        [InlineKeyboardButton("💳 شارژ حساب کاربری", callback_data=CB_MENU_TOPUP)],
+        [InlineKeyboardButton("🧪 چک پلاژياریسم و AI", callback_data=CB_MENU_PLAGIARISM)],
+        [InlineKeyboardButton("💳 خرید اشتراک", callback_data=CB_MENU_TOPUP)],
+        [InlineKeyboardButton("💰 شارژ کیف پول", callback_data=CB_MENU_WALLET_TOPUP)],
     ])
 
 # -- پنل ادمین
+def plagiarism_menu_kb() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("چک پلاژياریسم", callback_data=CB_PLAGIARISM_ONLY)],
+        [InlineKeyboardButton("چک پلاژياریسم و AI", callback_data=CB_PLAGIARISM_AI)],
+        [InlineKeyboardButton("↩️ بازگشت", callback_data=CB_MENU_ROOT)],
+    ])
+
+def plagiarism_product_kb(product_key: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("🫧 پرداخت", callback_data=f"{CB_PLAGIARISM_PAY_PREFIX}{product_key}")],
+        [InlineKeyboardButton("💰 پرداخت با کیف پول", callback_data=f"{CB_PLAGIARISM_WALLET_PREFIX}{product_key}")],
+        [InlineKeyboardButton("↩️ بازگشت", callback_data=CB_MENU_PLAGIARISM)],
+    ])
+
 def admin_root_kb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("منوی اصلی", callback_data=CB_ADMIN_USER_MENU)],
-        [InlineKeyboardButton("🔗 لینک‌ها",  callback_data=CB_ADMIN_LINKS)],
         [InlineKeyboardButton("📡 کانفیگ V2Ray", callback_data=CB_ADMIN_VPN)],
         [InlineKeyboardButton("👥 اکانت‌ها (IranPaper)", callback_data=CB_ADMIN_ACCOUNTS)],
         [InlineKeyboardButton("🔓 فعال‌سازی دانلود", callback_data=CB_ADMIN_ACTIVATION)],
+        [InlineKeyboardButton("🛒 فروشگاه", callback_data=CB_ADMIN_STORE)],
         [InlineKeyboardButton("💳 شارژ حساب", callback_data=CB_ADMIN_CHARGE)],
     ])
 
 # -- شاخهٔ «لینک‌ها»
+def store_menu_kb() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("💰 تنظیم قیمت چک پلاژياریسم", callback_data=CB_STORE_SET_PRICE_PLAG)],
+        [InlineKeyboardButton("💰 تنظیم قیمت چک پلاژياریسم و AI", callback_data=CB_STORE_SET_PRICE_AI)],
+        [InlineKeyboardButton("💳 تنظیم شماره کارت", callback_data=CB_STORE_SET_CARD)],
+        [InlineKeyboardButton("👥 تنظیم گروه بررسی پرداخت", callback_data=CB_STORE_SET_GROUP)],
+        [InlineKeyboardButton("↩️ بازگشت به پنل ادمین", callback_data=CB_BACK_ADMIN_ROOT)],
+    ])
+
+def store_back_kb() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("↩️ بازگشت به فروشگاه", callback_data=CB_ADMIN_STORE)],
+    ])
+
+def payment_review_kb(payment_id: int) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("✅ تایید پرداخت", callback_data=f"{CB_PAYMENT_APPROVE_PREFIX}{payment_id}")],
+        [InlineKeyboardButton("❌ رد پرداخت", callback_data=f"{CB_PAYMENT_REJECT_PREFIX}{payment_id}")],
+    ])
+
 def links_root_kb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("🌐 لینک سای‌هاب",   callback_data=CB_LINKS_SCIHUB)],
@@ -246,16 +434,15 @@ def back_to_menu_kb() -> InlineKeyboardMarkup:
 
 def account_menu_kb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("✉️ ارسال ایمیل", callback_data=CB_ACCOUNT_EMAIL)],
         [InlineKeyboardButton("📦 روش ارسال", callback_data=CB_ACCOUNT_DELIVERY)],
-        [InlineKeyboardButton("🔑 توکن افزونه", callback_data=CB_ACCOUNT_TOKEN)],
-        [InlineKeyboardButton("↩️ بازگشت به منوی اصلی", callback_data=CB_MENU_ROOT)],
+        [InlineKeyboardButton("🏠 منو", callback_data=CB_MENU_ROOT)],
     ])
 
 def token_menu_kb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("🔁 ساخت توکن جدید", callback_data=CB_TOKEN_REGEN)],
         [InlineKeyboardButton("↩️ بازگشت به حساب کاربری", callback_data=CB_MENU_ACCOUNT)],
+        [InlineKeyboardButton("↩️ بازگشت به منوی اصلی", callback_data=CB_MENU_ROOT)],
     ])
 
 def topup_menu_keyboard() -> InlineKeyboardMarkup:
@@ -270,6 +457,7 @@ def normal_subplan_keyboard() -> InlineKeyboardMarkup:
         [InlineKeyboardButton("۴۰ مقاله — ۲۴۰٬۰۰۰ تومان", callback_data=CB_NORMAL_40)],
         [InlineKeyboardButton("۱۰۰ مقاله — ۵۰۰٬۰۰۰ تومان", callback_data=CB_NORMAL_100)],
         [InlineKeyboardButton("↩️ بازگشت", callback_data=CB_BACK)],
+        [InlineKeyboardButton("↩️ بازگشت به منوی اصلی", callback_data=CB_MENU_ROOT)],
     ])
 
 def premium_subplan_keyboard() -> InlineKeyboardMarkup:
@@ -277,18 +465,22 @@ def premium_subplan_keyboard() -> InlineKeyboardMarkup:
         [InlineKeyboardButton("۱ ماه — ۲۴۰٬۰۰۰ تومان", callback_data=CB_PREMIUM_1M)],
         [InlineKeyboardButton("۳ ماه — ۶۰۰٬۰۰۰ تومان", callback_data=CB_PREMIUM_3M)],
         [InlineKeyboardButton("↩️ بازگشت", callback_data=CB_BACK)],
+        [InlineKeyboardButton("↩️ بازگشت به منوی اصلی", callback_data=CB_MENU_ROOT)],
     ])
 
 def confirm_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("✅ تایید پلن", callback_data=CB_CONFIRM)],
         [InlineKeyboardButton("↩️ بازگشت", callback_data=CB_BACK)],
+        [InlineKeyboardButton("↩️ بازگشت به منوی اصلی", callback_data=CB_MENU_ROOT)],
     ])
 
-def payment_keyboard(url: str) -> InlineKeyboardMarkup:
+def plan_payment_kb(plan_type: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("💳 پرداخت", url=url)],
+        [InlineKeyboardButton("🫧 پرداخت", callback_data=f"{CB_PLAN_PAY_PREFIX}{plan_type}")],
+        [InlineKeyboardButton("💰 پرداخت با کیف پول", callback_data=f"{CB_PLAN_WALLET_PREFIX}{plan_type}")],
         [InlineKeyboardButton("↩️ بازگشت به انتخاب پلن", callback_data=CB_BACK)],
+        [InlineKeyboardButton("↩️ بازگشت به منوی اصلی", callback_data=CB_MENU_ROOT)],
     ])
 
 def delivery_menu_kb() -> InlineKeyboardMarkup:
@@ -296,6 +488,7 @@ def delivery_menu_kb() -> InlineKeyboardMarkup:
         [InlineKeyboardButton("📲 ارسال در ربات", callback_data=CB_DELIVERY_BOT)],
         [InlineKeyboardButton("📧 ارسال از طریق ایمیل", callback_data=CB_DELIVERY_EMAIL)],
         [InlineKeyboardButton("↩️ بازگشت به حساب کاربری", callback_data=CB_MENU_ACCOUNT)],
+        [InlineKeyboardButton("↩️ بازگشت به منوی اصلی", callback_data=CB_MENU_ROOT)],
     ])
 
 def doi_control_kb() -> InlineKeyboardMarkup:
@@ -318,19 +511,10 @@ def dl_edit_menu_kb() -> InlineKeyboardMarkup:
     ])
 
 def vpn_menu_kb() -> InlineKeyboardMarkup:
-    cfg_labels = {str(c.get("id")): (c.get("label") or c.get("id")) for c in vpn_load_configs("iran")}
     rows = [
         [InlineKeyboardButton("🇮🇷 کانفیگ‌های ایران", callback_data=CB_VPN_IR)],
         [InlineKeyboardButton("🌍 کانفیگ‌های خارج", callback_data=CB_VPN_GLOBAL)],
     ]
-    # وضعیت VPN هر اکانت IranPaper
-    for acc in iranpaper_accounts_ordered():
-        slot = acc.get("slot")
-        vpn_id = acc.get("vpn_id")
-        vpn_label = cfg_labels.get(str(vpn_id), vpn_id) if vpn_id else "—"
-        rows.append([
-            InlineKeyboardButton(f"🛡 VPN{slot}: {vpn_label}", callback_data=f"vpn:acc:{slot}")
-        ])
     rows.append([InlineKeyboardButton("↩️ بازگشت", callback_data=CB_BACK_ADMIN_ROOT)])
     return InlineKeyboardMarkup(rows)
 
@@ -472,14 +656,19 @@ def build_account_text(user: Dict[str, Any], admin_flag: bool) -> str:
     else:
         plan_text = "— (هنوز انتخاب نشده)"
 
+    wallet_balance = int(user.get("wallet_balance") or 0)
+    wallet_text = f"{wallet_balance:,}".replace(",", "٬") + " تومان"
+
     email = user.get("email")
-    email_line = f"{htmlmod.escape(email)} ✅" if email else "— (تنظیم نشده، برای Unpaywall ضروری است)"
+    email_verified = bool(user.get("email_verified"))
+    if email:
+        status = "✅" if email_verified else "⚠️ (تایید نشده)"
+        email_line = f"{htmlmod.escape(email)} {status}"
+    else:
+        email_line = "— (تنظیم نشده، برای Unpaywall ضروری است)"
     delivery_method = user.get("delivery_method")
     delivery_name = "— (انتخاب نشده)" if delivery_method is None else ("ارسال در ربات" if delivery_method == "bot" else "ارسال از طریق ایمیل")
     warn = " ⚠️ (ایمیل تنظیم نشده)" if delivery_method == "email" and not email else ""
-
-    token_short = _mask_token(user.get("user_token"))
-    token_hint = " (از منوی «توکن افزونه» بگیرید)" if token_short == "—" else ""
 
     return (
         "👤 <ب>حساب کاربری</ب>\n"
@@ -488,9 +677,30 @@ def build_account_text(user: Dict[str, Any], admin_flag: bool) -> str:
         f"• ایمیل: {email_line}\n"
         f"• روش ارسال: {delivery_name}{warn}\n"
         f"• پلن: {plan_text}\n"
+        f"• موجودی کیف پول: {wallet_text}\n"
         f"• تعداد DOIهای ذخیره‌شده: {dois_count} 📚\n"
-        f"• توکن افزونه: {token_short}{token_hint}"
     ).replace("<ب>", "<b>").replace("</ب>", "</b>")
+def _store_status_text() -> str:
+    price_plag = _get_store_price(STORE_PRICE_PLAG_KEY, CFG.STORE_PLAGIARISM_PRICE)
+    price_ai = _get_store_price(STORE_PRICE_PLAG_AI_KEY, CFG.STORE_PLAGIARISM_AI_PRICE)
+    card = _get_store_card_number()
+    card_display = _format_card_number(card) if card else "تنظیم نشده"
+    group_id = _get_store_group_id()
+    group_display = str(group_id) if group_id else "تنظیم نشده"
+    price_plag_text = _format_price_toman(price_plag)
+    price_ai_text = _format_price_toman(price_ai)
+    if price_plag_text != "نامشخص":
+        price_plag_text += " تومان"
+    if price_ai_text != "نامشخص":
+        price_ai_text += " تومان"
+    return (
+        "🛒 <b>فروشگاه</b>\n"
+        f"• قیمت چک پلاژياریسم: {price_plag_text}\n"
+        f"• قیمت چک پلاژياریسم و AI: {price_ai_text}\n"
+        f"• شماره کارت: <code>{htmlmod.escape(card_display)}</code>\n"
+        f"• گروه بررسی پرداخت: <code>{htmlmod.escape(group_display)}</code>\n"
+    )
+
 def build_token_text(token: str) -> str:
     return (
         "🔑 <b>توکن افزونهٔ کروم</b>\n"
@@ -556,8 +766,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = ensure_user(update.effective_user.id, update.effective_user.username)
     logger.info("DBG | user_id=%s username=%s", update.effective_user.id, update.effective_user.username)
 
-    if update.message:
-        await update.message.reply_text("کیبورد کناری حذف شد ✅", reply_markup=ReplyKeyboardRemove())
     first = not bool(user.get("seen_welcome"))
     if first: db_set_seen_welcome(user["user_id"])
 
@@ -958,7 +1166,7 @@ async def receive_charge_email(update: Update, context: ContextTypes.DEFAULT_TYP
 
 
 def _parse_nonneg_int(text: str) -> Optional[int]:
-    s = (text or "").strip()
+    s = _normalize_digits(text).replace(",", "").replace("٬", "").strip()
     if not s:
         return None
     try:
@@ -1321,11 +1529,29 @@ async def show_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE, *, 
     else:
         await show_user_menu(update, context, edit=edit, first_time=first_time_note)
 
+async def send_main_menu_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    chat_id = update.effective_chat.id
+    if is_admin(update):
+        await context.bot.send_message(
+            chat_id,
+            "منوی مدیریت:",
+            parse_mode=ParseMode.HTML,
+            reply_markup=admin_root_kb(),
+        )
+    else:
+        await context.bot.send_message(chat_id, WELCOME_TEXT, reply_markup=main_menu_kb())
+
+async def on_download_link_done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    q = update.callback_query
+    if not q:
+        return
+    await q.answer()
+    await send_main_menu_message(update, context)
+
 
 async def send_account_view_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user = ensure_user(update.effective_user.id, update.effective_user.username)
-    text = build_account_text(user, is_admin(update))
-    await context.bot.send_message(update.effective_chat.id, text, parse_mode=ParseMode.HTML, reply_markup=account_menu_kb())
+    ensure_user(update.effective_user.id, update.effective_user.username)
+    await show_profile_card(update, context, include_delivery=True)
 
 
 
@@ -1333,9 +1559,8 @@ async def send_account_view_message(update: Update, context: ContextTypes.DEFAUL
 # ---- حساب کاربری و توکن
 async def on_menu_account(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     q = update.callback_query; await q.answer()
-    user = ensure_user(update.effective_user.id, update.effective_user.username)
-    text = build_account_text(user, is_admin(update))
-    await q.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=account_menu_kb())
+    ensure_user(update.effective_user.id, update.effective_user.username)
+    await show_profile_card(update, context, include_delivery=True)
 
 async def on_account_token(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     q = update.callback_query; await q.answer()
@@ -1373,12 +1598,28 @@ async def receive_email(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     if not EMAIL_REGEX.match(email):
         await update.message.reply_text("❗️ فرمت ایمیل معتبر نیست. نمونه: user@example.com", reply_markup=back_to_menu_kb())
         return WAITING_FOR_EMAIL
+    user = ensure_user(update.effective_user.id, update.effective_user.username)
+    result = request_email_verification(email, user_id=int(user.get("user_id")))
+    if not result.get("ok"):
+        if result.get("error") == "rate_limited":
+            retry_after = int(result.get("retry_after") or 0)
+            context.user_data["pending_email"] = email
+            await update.message.reply_text(
+                f"⏳ درخواست قبلی ثبت شده است. لطفاً {retry_after} ثانیه دیگر برای ارسال مجدد صبر کنید.",
+                reply_markup=back_to_menu_kb(),
+            )
+            return WAITING_FOR_EMAIL_CODE
+        await update.message.reply_text(
+            "⚠️ ارسال کد تایید با خطا مواجه شد. لطفاً دوباره تلاش کنید.",
+            reply_markup=back_to_menu_kb(),
+        )
+        return WAITING_FOR_EMAIL
     context.user_data["pending_email"] = email
     await update.message.reply_text(_email_code_rules_text(), parse_mode=ParseMode.HTML, reply_markup=back_to_menu_kb())
     return WAITING_FOR_EMAIL_CODE
 
 async def receive_email_code(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    code = (update.message.text or "").strip()
+    code = _normalize_digits(update.message.text or "").strip()
     if not _valid_email_code(code):
         await update.message.reply_text(
             "❗️ رمز نامعتبر است. لطفاً دوباره وارد کنید.\n\n" + _email_code_rules_text(),
@@ -1395,12 +1636,46 @@ async def receive_email_code(update: Update, context: ContextTypes.DEFAULT_TYPE)
         )
         return WAITING_FOR_EMAIL
 
-    user = ensure_user(update.effective_user.id, update.effective_user.username)
-    db_set_email(user["user_id"], pending_email)
-    save_user_email_code(user["user_id"], update.effective_user.username, pending_email, code)
-    context.user_data.pop("pending_email", None)
+    result = verify_email_code(pending_email, code)
+    if not result.get("ok"):
+        err = result.get("error")
+        if err == "invalid_code":
+            attempts_left = int(result.get("attempts_left") or 0)
+            await update.message.reply_text(
+                f"❗️ کد اشتباه است. {attempts_left} تلاش باقی مانده است.",
+                reply_markup=back_to_menu_kb(),
+            )
+            return WAITING_FOR_EMAIL_CODE
+        if err == "too_many_attempts":
+            context.user_data.pop("pending_email", None)
+            await update.message.reply_text(
+                "⚠️ تعداد تلاش‌ها بیش از حد مجاز است. لطفاً دوباره درخواست کد بدهید.",
+                reply_markup=back_to_menu_kb(),
+            )
+            return WAITING_FOR_EMAIL
+        if err == "expired":
+            context.user_data.pop("pending_email", None)
+            await update.message.reply_text(
+                "⌛️ کد منقضی شده است. لطفاً دوباره درخواست کد بدهید.",
+                reply_markup=back_to_menu_kb(),
+            )
+            return WAITING_FOR_EMAIL
+        if err == "already_verified":
+            context.user_data.pop("pending_email", None)
+            await update.message.reply_text(
+                "✅ ایمیل قبلاً تایید شده است.",
+                reply_markup=back_to_menu_kb(),
+            )
+            await send_account_view_message(update, context)
+            return ConversationHandler.END
+        await update.message.reply_text(
+            "⚠️ تایید ایمیل با خطا مواجه شد. لطفاً دوباره تلاش کنید.",
+            reply_markup=back_to_menu_kb(),
+        )
+        return WAITING_FOR_EMAIL_CODE
 
-    await update.message.reply_text("✅ ایمیل و رمز با موفقیت ثبت شد.", reply_markup=back_to_menu_kb())
+    context.user_data.pop("pending_email", None)
+    await update.message.reply_text("✅ ایمیل با موفقیت تایید شد.", reply_markup=back_to_menu_kb())
     await send_account_view_message(update, context)
     return ConversationHandler.END
 
@@ -1421,27 +1696,54 @@ async def set_delivery_bot(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     q = update.callback_query; await q.answer("روش ارسال: ربات")
     user = ensure_user(update.effective_user.id, update.effective_user.username)
     db_set_delivery(user["user_id"], "bot")
-    text = build_account_text(db_get_user(user["user_id"]), is_admin(update))
-    await q.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=account_menu_kb())
+    await show_profile_card(update, context, include_delivery=True)
 
 async def set_delivery_email(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     q = update.callback_query; await q.answer("روش ارسال: ایمیل")
     user = ensure_user(update.effective_user.id, update.effective_user.username)
     db_set_delivery(user["user_id"], "email")
-    text = build_account_text(db_get_user(user["user_id"]), is_admin(update))
-    await q.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=account_menu_kb())
+    await show_profile_card(update, context, include_delivery=True)
 
-# ---- شارژ/پلن‌ها
+# ---- اشتراک/پلن‌ها
 def compute_price_with_delivery(user: Dict[str, Any], base_price: int, plan_type: str) -> Tuple[int, bool]:
     add = False
     if plan_type.startswith("normal") and user.get("delivery_method") == "email":
         base_price += CFG.EXTRA_EMAIL_DELIVERY_FEE; add = True
     return base_price, add
 
+
+def plan_final_price(user: Dict[str, Any], plan_type: str) -> Tuple[int, bool]:
+    base_price = _plan_base_price(plan_type)
+    if base_price <= 0:
+        return 0, False
+    return compute_price_with_delivery(user, base_price, plan_type)
+
+
+def _activate_plan(user_id: int, plan_type: str) -> Dict[str, Any]:
+    user = db_get_user(int(user_id))
+    label = (user.get("plan_label") if user else "") or _plan_label(plan_type)
+    price_val = user.get("plan_price") if user else None
+    price = int(price_val) if isinstance(price_val, int) else _plan_base_price(plan_type)
+    note = (user.get("plan_note") if user else "") or _plan_note(plan_type)
+    db_set_plan(int(user_id), plan_type, label, price, "فعال", note)
+    quota_add = _plan_quota_paid(plan_type)
+    if quota_add > 0:
+        db_add_quota(int(user_id), paid_add=quota_add)
+    return {"label": label, "price": price, "quota_add": quota_add}
+
+
+def _reject_plan(user_id: int, plan_type: str) -> None:
+    user = db_get_user(int(user_id))
+    label = (user.get("plan_label") if user else "") or _plan_label(plan_type)
+    price_val = user.get("plan_price") if user else None
+    price = int(price_val) if isinstance(price_val, int) else _plan_base_price(plan_type)
+    note = (user.get("plan_note") if user else "") or _plan_note(plan_type)
+    db_set_plan(int(user_id), plan_type, label, price, "رد شد", note)
+
 async def on_menu_topup(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     q = update.callback_query; await q.answer()
     extra = f"{CFG.EXTRA_EMAIL_DELIVERY_FEE:,}".replace(",", "٬")
-    text = ("💳 <b>شارژ حساب کاربری</b>\n\n"
+    text = ("💳 <b>خرید اشتراک</b>\n\n"
             "🧰 <b>پلن معمولی</b>\n"
             "• ۴۰ مقاله — ۲۴۰٬۰۰۰ تومان\n"
             "• ۱۰۰ مقاله — ۵۰۰٬۰۰۰ تومان\n"
@@ -1453,6 +1755,41 @@ async def on_menu_topup(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             "• ۳ ماه — ۶۰۰٬۰۰۰ تومان\n"
             "⏳ اعتبار: بر اساس مدت اشتراک")
     await q.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=topup_menu_keyboard())
+
+
+async def on_menu_wallet_topup(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    q = update.callback_query
+    if not q:
+        return ConversationHandler.END
+    await q.answer()
+    user = ensure_user(update.effective_user.id, update.effective_user.username)
+    balance = int(user.get("wallet_balance") or 0)
+    balance_text = f"{balance:,}".replace(",", "٬")
+    text = (
+        "💰 <b>شارژ کیف پول</b>\n"
+        f"موجودی فعلی: <b>{balance_text} تومان</b>\n\n"
+        "مبلغ شارژ را وارد کنید (تومان):"
+    )
+    await q.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=back_to_menu_kb())
+    return WAITING_WALLET_TOPUP_AMOUNT
+
+
+async def receive_wallet_topup_amount(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    if not update.message:
+        return ConversationHandler.END
+    amount = _parse_amount(update.message.text or "")
+    if amount is None:
+        await update.message.reply_text("❗️ فقط مبلغ معتبر وارد کنید (عدد).", reply_markup=back_to_menu_kb())
+        return WAITING_WALLET_TOPUP_AMOUNT
+    return await _start_manual_payment(
+        update,
+        context,
+        product_key=WALLET_TOPUP_PRODUCT,
+        amount=amount,
+        product_label="شارژ کیف پول",
+        total_amount=amount,
+        wallet_used=0,
+    )
 
 def set_pending_plan(ctx_ud: Dict[str, Any], label: str, ptype: str, base_price: int, note: str) -> Tuple[int, bool]:
     ctx_ud["pending_plan"] = {"type": ptype, "label": label, "base_price": base_price, "note": note}
@@ -1544,8 +1881,127 @@ async def on_confirm_plan(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     text = ("✅ <b>پلن شما ثبت شد (در انتظار پرداخت)</b>\n"
             f"{(pending['label'])}\n"
             f"• قیمت: {price_str}{extra_line}\n"
-            "برای پرداخت روی دکمهٔ زیر بزنید:")
-    await q.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=payment_keyboard(CFG.ZARINPAL_URL))
+            "برای پرداخت یکی از گزینه‌های زیر را انتخاب کنید:")
+    await q.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=plan_payment_kb(pending["type"]))
+
+
+async def on_plan_pay(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    q = update.callback_query
+    if not q:
+        return ConversationHandler.END
+    await q.answer()
+
+    data = q.data or ""
+    if not data.startswith(CB_PLAN_PAY_PREFIX):
+        return ConversationHandler.END
+    plan_type = data[len(CB_PLAN_PAY_PREFIX):]
+    if plan_type not in PLAN_PRODUCTS:
+        return ConversationHandler.END
+
+    user = db_get_user(update.effective_user.id)
+    if not user or user.get("plan_type") != plan_type or user.get("plan_status") != "در انتظار پرداخت":
+        await context.bot.send_message(
+            update.effective_chat.id,
+            "ابتدا پلن خود را از بخش «خرید اشتراک» انتخاب و تایید کنید.",
+        )
+        return ConversationHandler.END
+
+    final_price, _added = plan_final_price(user, plan_type)
+    if final_price <= 0:
+        await context.bot.send_message(update.effective_chat.id, "❗️ مبلغ پلن نامعتبر است.")
+        return ConversationHandler.END
+
+    return await _start_manual_payment(
+        update,
+        context,
+        product_key=_plan_product_key(plan_type),
+        amount=final_price,
+        product_label=_plan_label(plan_type),
+        total_amount=final_price,
+        wallet_used=0,
+    )
+
+
+async def on_plan_wallet_pay(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    q = update.callback_query
+    if not q:
+        return ConversationHandler.END
+    await q.answer()
+
+    data = q.data or ""
+    if not data.startswith(CB_PLAN_WALLET_PREFIX):
+        return ConversationHandler.END
+    plan_type = data[len(CB_PLAN_WALLET_PREFIX):]
+    if plan_type not in PLAN_PRODUCTS:
+        return ConversationHandler.END
+
+    user = db_get_user(update.effective_user.id)
+    if not user or user.get("plan_type") != plan_type or user.get("plan_status") != "در انتظار پرداخت":
+        await context.bot.send_message(
+            update.effective_chat.id,
+            "ابتدا پلن خود را از بخش «خرید اشتراک» انتخاب و تایید کنید.",
+        )
+        return ConversationHandler.END
+
+    total_price, _added = plan_final_price(user, plan_type)
+    if total_price <= 0:
+        await context.bot.send_message(update.effective_chat.id, "❗️ مبلغ پلن نامعتبر است.")
+        return ConversationHandler.END
+
+    card_number = _get_store_card_number()
+    open_state = await _handle_open_payment_request(
+        update,
+        context,
+        user_id=int(user.get("user_id")),
+        fallback_product_key=_plan_product_key(plan_type),
+        fallback_amount=total_price,
+        fallback_card=card_number,
+    )
+    if open_state is not None:
+        return open_state
+
+    balance = int(user.get("wallet_balance") or 0)
+    wallet_used = min(balance, int(total_price))
+    remaining = int(total_price) - wallet_used
+
+    if remaining > 0:
+        group_id = _get_store_group_id()
+        if not card_number or not group_id:
+            await context.bot.send_message(
+                update.effective_chat.id,
+                "⚠️ پرداخت برای این سرویس در حال حاضر فعال نیست. لطفاً بعداً دوباره تلاش کنید.",
+            )
+            return ConversationHandler.END
+
+    if wallet_used > 0:
+        db_add_wallet_balance(int(user.get("user_id")), -wallet_used)
+
+    if remaining <= 0:
+        summary = _activate_plan(int(user.get("user_id")), plan_type)
+        balance_after = int(db_get_user(int(user.get("user_id"))).get("wallet_balance") or 0)
+        balance_text = f"{balance_after:,}".replace(",", "٬")
+        quota_add = summary.get("quota_add") or 0
+        quota_line = f"\n• سهمیه فعال‌شده: {quota_add}" if quota_add else ""
+        await context.bot.send_message(
+            update.effective_chat.id,
+            "✅ پرداخت با کیف پول انجام شد و اشتراک شما فعال گردید.\n"
+            f"• پلن: {summary.get('label')}\n"
+            f"• موجودی فعلی کیف پول: {balance_text} تومان{quota_line}",
+            reply_markup=back_to_menu_kb(),
+        )
+        return ConversationHandler.END
+
+    return await _start_manual_payment(
+        update,
+        context,
+        product_key=_plan_product_key(plan_type),
+        amount=remaining,
+        product_label=_plan_label(plan_type),
+        total_amount=int(total_price),
+        wallet_used=wallet_used,
+        refund_wallet_user_id=int(user.get("user_id")),
+        refund_wallet_amount=wallet_used,
+    )
 
 # ---- DOI Conversation
 async def enter_doi_flow(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -1668,6 +2124,8 @@ async def fallback_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     """
     if not update.message:
         return
+    if (context.user_data.get("email_ui") or {}).get("active"):
+        return
 
     text = (update.message.text or "").strip()
     found = DOI_REGEX.findall(text)
@@ -1709,10 +2167,7 @@ async def fallback_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         return  # 👈 هیچ پیام دیگری نفرست
 
     # --- ۲) متن نامرتبط → یادآوری ساده
-    await update.message.reply_text(
-        "از دکمه‌های زیر همین پیام استفاده کن. 🙂",
-        reply_markup=ReplyKeyboardRemove()
-    )
+    await send_main_menu_message(update, context)
 
 
 
@@ -1832,23 +2287,7 @@ def build_app() -> Application:
     )
  
     
-    email_conv = ConversationHandler(
-        entry_points=[CallbackQueryHandler(on_account_email_entry, pattern=f"^{CB_ACCOUNT_EMAIL}$")],
-        states={
-            WAITING_FOR_EMAIL: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, receive_email),
-                CallbackQueryHandler(on_menu_root, pattern=f"^{CB_MENU_ROOT}$"),
-            ],
-            WAITING_FOR_EMAIL_CODE: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, receive_email_code),
-                CallbackQueryHandler(on_menu_root, pattern=f"^{CB_MENU_ROOT}$"),
-            ],
-        },
-        fallbacks=[CommandHandler("cancel", cancel)],
-        name="email_conversation",
-        persistent=False,
-        block=True,
-    )
+    email_conv = build_email_verification_conversation()
 
     scihub_conv = ConversationHandler(
         entry_points=[CallbackQueryHandler(on_scihub_edit_entry, pattern=f"^{CB_SCIHUB_EDIT}$")],
@@ -1895,6 +2334,46 @@ def build_app() -> Application:
         },
         fallbacks=[CommandHandler("cancel", cancel)],
         name="dl_conv",
+        persistent=False,
+        block=True,
+    )
+
+    payment_conv = ConversationHandler(
+        entry_points=[
+            CallbackQueryHandler(on_plagiarism_pay, pattern=r"^plag:pay:"),
+            CallbackQueryHandler(on_plagiarism_wallet, pattern=r"^plag:wallet:"),
+            CallbackQueryHandler(on_plan_pay, pattern=r"^plan:pay:"),
+            CallbackQueryHandler(on_plan_wallet_pay, pattern=r"^plan:wallet:"),
+            CallbackQueryHandler(on_menu_wallet_topup, pattern=f"^{CB_MENU_WALLET_TOPUP}$"),
+        ],
+        states={
+            WAITING_WALLET_TOPUP_AMOUNT: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, receive_wallet_topup_amount),
+                CallbackQueryHandler(on_menu_root, pattern=f"^{CB_MENU_ROOT}$"),
+            ],
+            WAITING_PAYMENT_RECEIPT: [
+                MessageHandler(filters.PHOTO | filters.Document.ALL, receive_payment_receipt),
+                MessageHandler(filters.TEXT & ~filters.COMMAND, receive_payment_receipt_invalid),
+                CallbackQueryHandler(on_menu_root, pattern=f"^{CB_MENU_ROOT}$"),
+                CallbackQueryHandler(on_menu_plagiarism, pattern=f"^{CB_MENU_PLAGIARISM}$"),
+            ],
+        },
+        fallbacks=[CommandHandler("cancel", cancel)],
+        name="payment_conv",
+        persistent=False,
+        block=True,
+    )
+
+    submit_conv = ConversationHandler(
+        entry_points=[CallbackQueryHandler(on_plagiarism_submit_entry, pattern=r"^plag:submit:\d+$")],
+        states={
+            WAITING_PLAGIARISM_SUBMIT: [
+                MessageHandler(filters.PHOTO | filters.Document.ALL | (filters.TEXT & ~filters.COMMAND), receive_plagiarism_submission),
+                CallbackQueryHandler(on_menu_root, pattern=f"^{CB_MENU_ROOT}$"),
+            ],
+        },
+        fallbacks=[CommandHandler("cancel", cancel)],
+        name="plagiarism_submit_conv",
         persistent=False,
         block=True,
     )
@@ -1955,7 +2434,44 @@ def build_app() -> Application:
         block=True,
     )
 
+    store_conv = ConversationHandler(
+        entry_points=[
+            CallbackQueryHandler(on_store_set_price_plag, pattern=f"^{CB_STORE_SET_PRICE_PLAG}$"),
+            CallbackQueryHandler(on_store_set_price_ai, pattern=f"^{CB_STORE_SET_PRICE_AI}$"),
+            CallbackQueryHandler(on_store_set_card, pattern=f"^{CB_STORE_SET_CARD}$"),
+            CallbackQueryHandler(on_store_set_group, pattern=f"^{CB_STORE_SET_GROUP}$"),
+        ],
+        states={
+            WAITING_STORE_PRICE_PLAG: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, receive_store_price_plag),
+                CallbackQueryHandler(on_menu_store, pattern=f"^{CB_ADMIN_STORE}$"),
+                CallbackQueryHandler(on_back_admin_root, pattern=f"^{CB_BACK_ADMIN_ROOT}$"),
+            ],
+            WAITING_STORE_PRICE_AI: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, receive_store_price_ai),
+                CallbackQueryHandler(on_menu_store, pattern=f"^{CB_ADMIN_STORE}$"),
+                CallbackQueryHandler(on_back_admin_root, pattern=f"^{CB_BACK_ADMIN_ROOT}$"),
+            ],
+            WAITING_STORE_CARD: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, receive_store_card),
+                CallbackQueryHandler(on_menu_store, pattern=f"^{CB_ADMIN_STORE}$"),
+                CallbackQueryHandler(on_back_admin_root, pattern=f"^{CB_BACK_ADMIN_ROOT}$"),
+            ],
+            WAITING_STORE_GROUP: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, receive_store_group),
+                CallbackQueryHandler(on_menu_store, pattern=f"^{CB_ADMIN_STORE}$"),
+                CallbackQueryHandler(on_back_admin_root, pattern=f"^{CB_BACK_ADMIN_ROOT}$"),
+            ],
+        },
+        fallbacks=[CommandHandler("cancel", cancel)],
+        name="store_conv",
+        persistent=False,
+        block=True,
+    )
+
     app.add_handler(dl_conv, group=0)
+    app.add_handler(payment_conv, group=0)
+    app.add_handler(submit_conv, group=0)
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_cmd))
@@ -1966,10 +2482,17 @@ def build_app() -> Application:
     app.add_handler(scihub_conv, group=0)
     app.add_handler(vpn_conv, group=0)
     app.add_handler(charge_conv, group=0)
+    app.add_handler(store_conv, group=0)
     app.add_handler(CallbackQueryHandler(on_links_download,    pattern=f"^{CB_LINKS_DOWNLOAD}$"))
     app.add_handler(CallbackQueryHandler(on_dl_edit_menu,      pattern=f"^{CB_DL_EDIT}$"))
     app.add_handler(CallbackQueryHandler(on_dl_backup_toggle,  pattern=f"^{CB_DL_BACKUP}$"))
     app.add_handler(CallbackQueryHandler(dl_backup_toggle_item, pattern=r"^dl:toggle:\d+$"))
+    app.add_handler(CallbackQueryHandler(on_download_link_done, pattern=f"^{CB_DL_DONE}$"))
+    app.add_handler(CallbackQueryHandler(on_menu_plagiarism, pattern=f"^{CB_MENU_PLAGIARISM}$"))
+    app.add_handler(CallbackQueryHandler(on_plagiarism_product, pattern=r"^plag:(only|ai)$"))
+    app.add_handler(CallbackQueryHandler(on_payment_approve, pattern=r"^pay:approve:\d+$"))
+    app.add_handler(CallbackQueryHandler(on_payment_reject, pattern=r"^pay:reject:\d+$"))
+    app.add_handler(CallbackQueryHandler(on_menu_store, pattern=f"^{CB_ADMIN_STORE}$"))
 
 
     app.add_handler(CallbackQueryHandler(on_menu_account, pattern=f"^{CB_MENU_ACCOUNT}$"))
@@ -1990,6 +2513,7 @@ def build_app() -> Application:
     app.add_handler(CallbackQueryHandler(on_back, pattern=f"^{CB_BACK}$"))
     app.add_handler(CallbackQueryHandler(on_back_root, pattern=f"^{CB_BACK_ROOT}$"))
     app.add_handler(CallbackQueryHandler(on_menu_root, pattern=f"^{CB_MENU_ROOT}$"))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, on_payment_reject_reason, block=False), group=1)
     app.add_handler(
         MessageHandler(filters.TEXT & ~filters.COMMAND, fallback_text),
         group=99
@@ -2014,6 +2538,835 @@ def build_app() -> Application:
         app.add_handler(CallbackQueryHandler(on_scinet_done, pattern=f"^{SCINET_DONE_CALLBACK}$"))
     app.add_error_handler(error_handler)
     return app
+
+def _payment_amount_display(amount: int) -> str:
+    amount_text = _format_price_toman(amount)
+    return f"{amount_text} تومان" if amount_text != "نامشخص" else "نامشخص"
+
+
+def _product_label(product_key: str) -> str:
+    if product_key == WALLET_TOPUP_PRODUCT:
+        return "شارژ کیف پول"
+    product = PLAGIARISM_PRODUCTS.get(product_key)
+    if product:
+        return product["label"]
+    plan_type = _plan_type_from_product_key(product_key)
+    if plan_type:
+        return _plan_label(plan_type)
+    return "نامشخص"
+
+
+def _product_price(product_key: str) -> int:
+    product = PLAGIARISM_PRODUCTS.get(product_key)
+    if not product:
+        return 0
+    default = CFG.STORE_PLAGIARISM_PRICE if product_key == PLAGIARISM_PRODUCT else CFG.STORE_PLAGIARISM_AI_PRICE
+    return _get_store_price(product["price_key"], default)
+
+
+def _build_payment_instruction_text(
+    product_label: str,
+    amount: int,
+    card_number: str,
+    payment_id: int,
+    payment_code: str,
+    *,
+    total_amount: Optional[int] = None,
+    wallet_used: int = 0,
+) -> str:
+    amount_display = _payment_amount_display(amount)
+    total_value = int(total_amount) if total_amount is not None else int(amount)
+    total_display = _payment_amount_display(total_value)
+    wallet_used = int(wallet_used or 0)
+    wallet_display = _payment_amount_display(wallet_used) if wallet_used > 0 else ""
+    card_display = _format_card_number(card_number) if card_number else "—"
+    if wallet_used > 0 and total_value > 0:
+        price_lines = (
+            f"مبلغ کل: {total_display}\n"
+            f"پرداخت از کیف پول: {wallet_display}\n"
+            f"مبلغ قابل پرداخت: {amount_display}\n"
+        )
+        pay_line = f"برای تکمیل خرید لطفا مبلغ باقی‌مانده {amount_display} را به شماره کارت {card_display} زیر پرداخت کنید و سپس تصویر رسید خود را ارسال کنید."
+    else:
+        price_lines = f"مبلغ: {amount_display}\n"
+        pay_line = f"برای خرید این محصول لطفا مبلغ {amount_display} را به شماره کارت {card_display} زیر پرداخت کنید و سپس تصویر رسید خود را ارسال کنید."
+    return (
+        "🧾 <b>راهنمای پرداخت</b>\n"
+        f"محصول: {htmlmod.escape(product_label)}\n"
+        f"{price_lines}"
+        f"شماره کارت: <code>{htmlmod.escape(card_display)}</code>\n"
+        f"شماره پرداخت: <code>{payment_id}</code>\n"
+        f"کد پرداخت: <code>{htmlmod.escape(payment_code)}</code>\n\n"
+        f"{pay_line}"
+    )
+
+
+async def _handle_open_payment_request(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+    *,
+    user_id: int,
+    fallback_product_key: str,
+    fallback_amount: int,
+    fallback_card: str,
+) -> Optional[int]:
+    open_req = db_get_open_payment_request(int(user_id))
+    if not open_req:
+        return None
+    status = open_req.get("status")
+    label = _product_label(open_req.get("product_key") or fallback_product_key)
+    chat_id = update.effective_chat.id
+    if status == PAYMENT_STATUS_PENDING:
+        await context.bot.send_message(
+            chat_id,
+            f"رسید پرداخت قبلی برای «{label}» در حال بررسی است. کد پرداخت: {open_req.get('payment_code','—')}",
+        )
+        return ConversationHandler.END
+    if status == PAYMENT_STATUS_AWAITING:
+        payment_id = int(open_req.get("id") or 0)
+        context.user_data[PENDING_PAYMENT_KEY] = payment_id
+        context.user_data[PENDING_PAYMENT_PRODUCT_KEY] = open_req.get("product_key") or fallback_product_key
+        amount_val = int(open_req.get("amount") or fallback_amount)
+        total_amount_val = int(open_req.get("total_amount") or amount_val)
+        wallet_used = int(open_req.get("wallet_used") or 0)
+        text = _build_payment_instruction_text(
+            label,
+            amount_val,
+            open_req.get("card_number") or fallback_card,
+            payment_id,
+            str(open_req.get("payment_code") or ""),
+            total_amount=total_amount_val,
+            wallet_used=wallet_used,
+        )
+        await context.bot.send_message(chat_id, text, parse_mode=ParseMode.HTML)
+        return WAITING_PAYMENT_RECEIPT
+    return ConversationHandler.END
+
+
+async def _start_manual_payment(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+    *,
+    product_key: str,
+    amount: int,
+    product_label: Optional[str] = None,
+    total_amount: Optional[int] = None,
+    wallet_used: int = 0,
+    refund_wallet_user_id: Optional[int] = None,
+    refund_wallet_amount: int = 0,
+) -> int:
+    user = update.effective_user
+    if not user:
+        return ConversationHandler.END
+    chat_id = update.effective_chat.id
+    group_id = _get_store_group_id()
+    card_number = _get_store_card_number()
+    if amount <= 0 or not card_number or not group_id:
+        await context.bot.send_message(
+            chat_id,
+            "⚠️ پرداخت برای این سرویس در حال حاضر فعال نیست. لطفاً بعداً دوباره تلاش کنید.",
+        )
+        if refund_wallet_user_id and refund_wallet_amount > 0:
+            db_add_wallet_balance(int(refund_wallet_user_id), int(refund_wallet_amount))
+        return ConversationHandler.END
+
+    open_state = await _handle_open_payment_request(
+        update,
+        context,
+        user_id=int(user.id),
+        fallback_product_key=product_key,
+        fallback_amount=amount,
+        fallback_card=card_number,
+    )
+    if open_state is not None:
+        return open_state
+
+    req = db_create_payment_request(
+        int(user.id),
+        user.username,
+        int(chat_id),
+        product_key,
+        int(amount),
+        card_number,
+        total_amount=total_amount if total_amount is not None else int(amount),
+        wallet_used=int(wallet_used or 0),
+    )
+    payment_id = int(req.get("id") or 0)
+    if not payment_id:
+        if refund_wallet_user_id and refund_wallet_amount > 0:
+            db_add_wallet_balance(int(refund_wallet_user_id), int(refund_wallet_amount))
+        await context.bot.send_message(chat_id, "❗️ ثبت پرداخت با خطا مواجه شد. لطفاً دوباره تلاش کنید.")
+        return ConversationHandler.END
+
+    context.user_data[PENDING_PAYMENT_KEY] = payment_id
+    context.user_data[PENDING_PAYMENT_PRODUCT_KEY] = product_key
+    label = product_label or _product_label(product_key)
+    text = _build_payment_instruction_text(
+        label,
+        int(amount),
+        card_number,
+        payment_id,
+        str(req.get("payment_code") or ""),
+        total_amount=total_amount if total_amount is not None else int(amount),
+        wallet_used=int(wallet_used or 0),
+    )
+    await context.bot.send_message(chat_id, text, parse_mode=ParseMode.HTML)
+    return WAITING_PAYMENT_RECEIPT
+
+
+async def _send_plagiarism_submit_prompt(
+    context: ContextTypes.DEFAULT_TYPE,
+    *,
+    chat_id: int,
+    payment_id: int,
+    payment_code: str,
+) -> None:
+    text = (
+        "✅ پرداخت شما تایید شد.\n"
+        f"شماره پرداخت: {payment_id}\n"
+        f"کد پرداخت: {payment_code}\n"
+        "برای ادامه روند، روی دکمهٔ ارسال فایل/متن بزنید."
+    )
+    reply_markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("📄 ارسال فایل/متن برای بررسی", callback_data=f"{CB_PLAGIARISM_SUBMIT_PREFIX}{payment_id}")],
+        [InlineKeyboardButton("↩️ منوی اصلی", callback_data=CB_MENU_ROOT)],
+    ])
+    with contextlib.suppress(Exception):
+        await context.bot.send_message(int(chat_id), text, reply_markup=reply_markup)
+
+async def on_menu_plagiarism(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    q = update.callback_query
+    if not q:
+        return
+    await q.answer()
+    text = "🧪 <b>انتخاب سرویس بررسی</b>\nیکی از گزینه‌های زیر را انتخاب کنید:"
+    await q.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=plagiarism_menu_kb())
+    return ConversationHandler.END
+
+
+async def on_plagiarism_product(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    q = update.callback_query
+    if not q:
+        return
+    await q.answer()
+    data = q.data or ""
+    product_key = PLAGIARISM_PRODUCT if data == CB_PLAGIARISM_ONLY else PLAGIARISM_AI_PRODUCT
+    label = _product_label(product_key)
+    price = _product_price(product_key)
+    price_display = _payment_amount_display(price)
+    text = (
+        "🔒 <b>امنیت و محرمانگی</b>\n"
+        "اطلاعات شما محرمانه است و فقط برای بررسی استفاده می‌شود.\n"
+        "هیچ داده‌ای بدون اجازه شما منتشر یا با شخص ثالثی به اشتراک گذاشته نمی‌شود.\n\n"
+        f"💰 قیمت: <b>{price_display}</b>\n"
+    )
+    await q.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=plagiarism_product_kb(product_key))
+
+
+async def on_plagiarism_pay(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    q = update.callback_query
+    if not q:
+        return ConversationHandler.END
+    await q.answer()
+
+    data = q.data or ""
+    if not data.startswith(CB_PLAGIARISM_PAY_PREFIX):
+        return ConversationHandler.END
+    product_key = data[len(CB_PLAGIARISM_PAY_PREFIX):]
+    if product_key not in PLAGIARISM_PRODUCTS:
+        return ConversationHandler.END
+    price = _product_price(product_key)
+    return await _start_manual_payment(
+        update,
+        context,
+        product_key=product_key,
+        amount=price,
+        product_label=_product_label(product_key),
+        total_amount=price,
+        wallet_used=0,
+    )
+
+
+async def on_plagiarism_wallet(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    q = update.callback_query
+    if not q:
+        return ConversationHandler.END
+    await q.answer()
+
+    data = q.data or ""
+    if not data.startswith(CB_PLAGIARISM_WALLET_PREFIX):
+        return ConversationHandler.END
+    product_key = data[len(CB_PLAGIARISM_WALLET_PREFIX):]
+    if product_key not in PLAGIARISM_PRODUCTS:
+        return ConversationHandler.END
+
+    user = update.effective_user
+    if not user:
+        return ConversationHandler.END
+
+    price = _product_price(product_key)
+    if price <= 0:
+        await context.bot.send_message(
+            update.effective_chat.id,
+            "⚠️ پرداخت برای این سرویس در حال حاضر فعال نیست. لطفاً بعداً دوباره تلاش کنید.",
+        )
+        return ConversationHandler.END
+
+    card_number = _get_store_card_number()
+    open_state = await _handle_open_payment_request(
+        update,
+        context,
+        user_id=int(user.id),
+        fallback_product_key=product_key,
+        fallback_amount=price,
+        fallback_card=card_number,
+    )
+    if open_state is not None:
+        return open_state
+
+    db_user = db_get_user(int(user.id))
+    balance = int(db_user.get("wallet_balance") or 0) if db_user else 0
+    wallet_used = min(balance, int(price))
+    remaining = int(price) - wallet_used
+
+    if remaining > 0:
+        group_id = _get_store_group_id()
+        if not card_number or not group_id:
+            await context.bot.send_message(
+                update.effective_chat.id,
+                "⚠️ پرداخت برای این سرویس در حال حاضر فعال نیست. لطفاً بعداً دوباره تلاش کنید.",
+            )
+            return ConversationHandler.END
+
+    if wallet_used > 0:
+        db_add_wallet_balance(int(user.id), -wallet_used)
+
+    if remaining <= 0:
+        req = db_create_payment_request(
+            int(user.id),
+            user.username,
+            int(update.effective_chat.id),
+            product_key,
+            int(price),
+            "",
+            total_amount=int(price),
+            wallet_used=int(price),
+        )
+        payment_id = int(req.get("id") or 0)
+        if not payment_id:
+            if wallet_used > 0:
+                db_add_wallet_balance(int(user.id), wallet_used)
+            await context.bot.send_message(update.effective_chat.id, "❗️ ثبت پرداخت با خطا مواجه شد. لطفاً دوباره تلاش کنید.")
+            return ConversationHandler.END
+        db_set_payment_status(payment_id, PAYMENT_STATUS_APPROVED)
+        await _send_plagiarism_submit_prompt(
+            context,
+            chat_id=int(update.effective_chat.id),
+            payment_id=payment_id,
+            payment_code=str(req.get("payment_code") or "—"),
+        )
+        return ConversationHandler.END
+
+    return await _start_manual_payment(
+        update,
+        context,
+        product_key=product_key,
+        amount=remaining,
+        product_label=_product_label(product_key),
+        total_amount=int(price),
+        wallet_used=wallet_used,
+        refund_wallet_user_id=int(user.id),
+        refund_wallet_amount=wallet_used,
+    )
+
+
+async def on_plagiarism_submit_entry(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    q = update.callback_query
+    if not q:
+        return ConversationHandler.END
+    await q.answer()
+
+    data = q.data or ""
+    if not data.startswith(CB_PLAGIARISM_SUBMIT_PREFIX):
+        return ConversationHandler.END
+    try:
+        payment_id = int(data.split(":")[-1])
+    except Exception:
+        return ConversationHandler.END
+
+    rec = db_get_payment_request(payment_id)
+    if not rec or rec.get("status") != PAYMENT_STATUS_APPROVED:
+        await q.edit_message_text("پرداخت تایید نشده است.", reply_markup=back_to_menu_kb())
+        return ConversationHandler.END
+
+    if update.effective_user and int(rec.get("user_id") or 0) != int(update.effective_user.id):
+        await q.answer("دسترسی ندارید.", show_alert=True)
+        return ConversationHandler.END
+
+    context.user_data[PENDING_SUBMISSION_KEY] = payment_id
+    await q.edit_message_text("لطفاً فایل یا متن خود را برای بررسی ارسال کنید.", reply_markup=back_to_menu_kb())
+    return WAITING_PLAGIARISM_SUBMIT
+
+
+async def receive_plagiarism_submission(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    if not update.message:
+        return ConversationHandler.END
+
+    payment_id = context.user_data.get(PENDING_SUBMISSION_KEY)
+    if not payment_id:
+        return ConversationHandler.END
+
+    rec = db_get_payment_request(int(payment_id))
+    if not rec or rec.get("status") != PAYMENT_STATUS_APPROVED:
+        await update.message.reply_text("پرداخت تایید نشده است.", reply_markup=back_to_menu_kb())
+        context.user_data.pop(PENDING_SUBMISSION_KEY, None)
+        return ConversationHandler.END
+
+    if update.effective_user and int(rec.get("user_id") or 0) != int(update.effective_user.id):
+        await update.message.reply_text("دسترسی ندارید.")
+        context.user_data.pop(PENDING_SUBMISSION_KEY, None)
+        return ConversationHandler.END
+
+    group_id = _get_store_group_id()
+    if not group_id:
+        await update.message.reply_text("گروه بررسی تنظیم نشده است. لطفاً با پشتیبانی تماس بگیرید.")
+        return ConversationHandler.END
+
+    user = update.effective_user
+    username = f"@{user.username}" if user and user.username else ""
+    full_name = user.full_name if user else "—"
+    product_label = _product_label(rec.get("product_key") or "")
+    caption = (
+        "📄 ارسال برای بررسی\n"
+        f"شماره پرداخت: {rec.get('id')}\n"
+        f"کد پرداخت: {rec.get('payment_code','—')}\n"
+        f"محصول: {product_label}\n"
+        f"کاربر: {full_name} {username}\n"
+        f"شناسه کاربر: {rec.get('user_id','—')}"
+    )
+
+    try:
+        if update.message.photo:
+            await context.bot.send_photo(group_id, update.message.photo[-1].file_id, caption=caption)
+        elif update.message.document:
+            await context.bot.send_document(group_id, update.message.document.file_id, caption=caption)
+        elif update.message.text:
+            await context.bot.send_message(group_id, f"{caption}\n\nمتن ارسالی:\n{update.message.text}")
+        else:
+            await update.message.reply_text("لطفاً فایل یا متن ارسال کنید.")
+            return WAITING_PLAGIARISM_SUBMIT
+    except Exception:
+        pass
+
+    await update.message.reply_text("✅ ارسال شما ثبت شد و در حال بررسی است.")
+    context.user_data.pop(PENDING_SUBMISSION_KEY, None)
+    return ConversationHandler.END
+
+
+async def receive_payment_receipt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    if not update.message:
+        return ConversationHandler.END
+
+    payment_id = context.user_data.get(PENDING_PAYMENT_KEY)
+    if not payment_id:
+        await update.message.reply_text("ابتدا پرداخت را از طریق دکمهٔ پرداخت شروع کنید.")
+        return ConversationHandler.END
+
+    rec = db_get_payment_request(int(payment_id))
+    if not rec:
+        await update.message.reply_text("❗️ اطلاعات پرداخت یافت نشد.")
+        context.user_data.pop(PENDING_PAYMENT_KEY, None)
+        return ConversationHandler.END
+
+    if rec.get("status") != PAYMENT_STATUS_AWAITING:
+        await update.message.reply_text("این پرداخت قبلاً ثبت شده است.")
+        context.user_data.pop(PENDING_PAYMENT_KEY, None)
+        return ConversationHandler.END
+
+    file_id = ""
+    file_unique_id = ""
+    if update.message.photo:
+        photo = update.message.photo[-1]
+        file_id = photo.file_id
+        file_unique_id = photo.file_unique_id
+    elif update.message.document:
+        doc = update.message.document
+        file_id = doc.file_id
+        file_unique_id = doc.file_unique_id
+    else:
+        await update.message.reply_text("لطفاً تصویر یا فایل رسید را ارسال کنید.")
+        return WAITING_PAYMENT_RECEIPT
+
+    db_update_payment_receipt(
+        int(payment_id),
+        file_id=file_id,
+        file_unique_id=file_unique_id,
+        message_id=int(update.message.message_id),
+    )
+
+    group_id = _get_store_group_id()
+    if not group_id:
+        await update.message.reply_text("⚠️ گروه بررسی پرداخت تنظیم نشده است. لطفاً با پشتیبانی تماس بگیرید.")
+        return ConversationHandler.END
+
+    product_label = _product_label(rec.get("product_key") or "")
+    amount_value = int(rec.get("amount") or 0)
+    total_value = int(rec.get("total_amount") or amount_value)
+    wallet_used = int(rec.get("wallet_used") or 0)
+    amount_display = _payment_amount_display(amount_value)
+    total_display = _payment_amount_display(total_value)
+    wallet_display = _payment_amount_display(wallet_used) if wallet_used > 0 else ""
+    if wallet_used > 0 and total_value > 0:
+        amount_lines = (
+            f"مبلغ کل: {total_display}\n"
+            f"پرداخت از کیف پول: {wallet_display}\n"
+            f"مبلغ قابل پرداخت: {amount_display}\n"
+        )
+    else:
+        amount_lines = f"مبلغ: {amount_display}\n"
+    card_display = _format_card_number(rec.get("card_number") or "") or "—"
+    user = update.effective_user
+    username = f"@{user.username}" if user and user.username else ""
+    full_name = user.full_name if user else "—"
+    caption = (
+        "🧾 رسید پرداخت\n"
+        f"شماره پرداخت: {rec.get('id')}\n"
+        f"کد پرداخت: {rec.get('payment_code','—')}\n"
+        f"محصول: {product_label}\n"
+        f"{amount_lines}"
+        f"شماره کارت: {card_display}\n"
+        f"کاربر: {full_name} {username}\n"
+        f"شناسه کاربر: {rec.get('user_id','—')}\n"
+        f"چت کاربر: {rec.get('chat_id','—')}"
+    )
+
+    review_msg = None
+    try:
+        if update.message.photo:
+            review_msg = await context.bot.send_photo(
+                chat_id=group_id,
+                photo=file_id,
+                caption=caption,
+                reply_markup=payment_review_kb(int(payment_id)),
+            )
+        else:
+            review_msg = await context.bot.send_document(
+                chat_id=group_id,
+                document=file_id,
+                caption=caption,
+                reply_markup=payment_review_kb(int(payment_id)),
+            )
+    except Exception:
+        pass
+
+    if review_msg:
+        db_set_payment_review_message(int(payment_id), int(review_msg.chat_id), int(review_msg.message_id))
+
+    await update.message.reply_text(
+        f"✅ رسید دریافت شد و در حال بررسی است.\nکد پرداخت: {rec.get('payment_code','—')}",
+    )
+    context.user_data.pop(PENDING_PAYMENT_KEY, None)
+    context.user_data.pop(PENDING_PAYMENT_PRODUCT_KEY, None)
+    return ConversationHandler.END
+
+
+async def receive_payment_receipt_invalid(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    if update.message:
+        await update.message.reply_text("لطفاً فقط تصویر رسید را ارسال کنید.")
+    return WAITING_PAYMENT_RECEIPT
+
+
+async def on_payment_approve(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    q = update.callback_query
+    if not q:
+        return
+    await q.answer()
+    if not is_admin(update):
+        await q.answer("دسترسی ندارید.", show_alert=True)
+        return
+
+    data = q.data or ""
+    payment_id = int(data.split(":")[-1]) if data.startswith(CB_PAYMENT_APPROVE_PREFIX) else 0
+    if not payment_id:
+        return
+
+    rec = db_get_payment_request(payment_id)
+    if not rec:
+        await q.answer("پرداخت یافت نشد.", show_alert=True)
+        return
+
+    status = rec.get("status")
+    if status == PAYMENT_STATUS_APPROVED:
+        await q.answer("قبلاً تایید شده است.", show_alert=True)
+        return
+    if status == PAYMENT_STATUS_REJECTED:
+        await q.answer("قبلاً رد شده است.", show_alert=True)
+        return
+    if status != PAYMENT_STATUS_PENDING:
+        await q.answer("وضعیت پرداخت نامعتبر است.", show_alert=True)
+        return
+
+    db_set_payment_status(payment_id, PAYMENT_STATUS_APPROVED, admin_id=q.from_user.id if q.from_user else None)
+    try:
+        await q.edit_message_reply_markup(reply_markup=None)
+    except Exception:
+        pass
+
+    product_key = rec.get("product_key") or ""
+    plan_type = _plan_type_from_product_key(product_key)
+    if product_key in PLAGIARISM_PRODUCTS:
+        await _send_plagiarism_submit_prompt(
+            context,
+            chat_id=int(rec.get("chat_id") or 0),
+            payment_id=payment_id,
+            payment_code=str(rec.get("payment_code") or "—"),
+        )
+        return
+
+    if product_key == WALLET_TOPUP_PRODUCT:
+        credit_amount = int(rec.get("total_amount") or rec.get("amount") or 0)
+        if credit_amount > 0:
+            db_add_wallet_balance(int(rec.get("user_id") or 0), credit_amount)
+        balance_after = db_get_user(int(rec.get("user_id") or 0)).get("wallet_balance") or 0
+        balance_text = f"{int(balance_after):,}".replace(",", "٬")
+        amount_display = _payment_amount_display(credit_amount)
+        text = (
+            "✅ شارژ کیف پول شما تایید شد.\n"
+            f"مبلغ: {amount_display}\n"
+            f"موجودی فعلی: {balance_text} تومان"
+        )
+        with contextlib.suppress(Exception):
+            await context.bot.send_message(int(rec.get("chat_id") or 0), text, reply_markup=back_to_menu_kb())
+        return
+
+    if plan_type:
+        summary = _activate_plan(int(rec.get("user_id") or 0), plan_type)
+        quota_add = summary.get("quota_add") or 0
+        quota_line = f"\n• سهمیه فعال‌شده: {quota_add}" if quota_add else ""
+        text = (
+            "✅ پرداخت شما تایید شد و اشتراک فعال گردید.\n"
+            f"• پلن: {summary.get('label')}{quota_line}"
+        )
+        with contextlib.suppress(Exception):
+            await context.bot.send_message(int(rec.get("chat_id") or 0), text, reply_markup=back_to_menu_kb())
+        return
+
+    text = (
+        "✅ پرداخت شما تایید شد.\n"
+        f"شماره پرداخت: {payment_id}\n"
+        f"کد پرداخت: {rec.get('payment_code','—')}"
+    )
+    with contextlib.suppress(Exception):
+        await context.bot.send_message(int(rec.get("chat_id") or 0), text)
+
+
+async def on_payment_reject(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    q = update.callback_query
+    if not q:
+        return
+    await q.answer()
+    if not is_admin(update):
+        await q.answer("دسترسی ندارید.", show_alert=True)
+        return
+
+    data = q.data or ""
+    payment_id = int(data.split(":")[-1]) if data.startswith(CB_PAYMENT_REJECT_PREFIX) else 0
+    if not payment_id:
+        return
+
+    rec = db_get_payment_request(payment_id)
+    if not rec:
+        await q.answer("پرداخت یافت نشد.", show_alert=True)
+        return
+
+    status = rec.get("status")
+    if status == PAYMENT_STATUS_APPROVED:
+        await q.answer("قبلاً تایید شده است.", show_alert=True)
+        return
+    if status == PAYMENT_STATUS_REJECTED:
+        await q.answer("قبلاً رد شده است.", show_alert=True)
+        return
+    if status != PAYMENT_STATUS_PENDING:
+        await q.answer("وضعیت پرداخت نامعتبر است.", show_alert=True)
+        return
+
+    context.user_data[PENDING_REJECT_KEY] = payment_id
+    context.user_data[PENDING_REJECT_MSG_KEY] = (q.message.chat_id if q.message else None, q.message.message_id if q.message else None)
+    await q.message.reply_text("لطفاً دلیل رد پرداخت را ارسال کنید.")
+
+
+async def on_payment_reject_reason(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not update.message or not is_admin(update):
+        return
+
+    payment_id = context.user_data.get(PENDING_REJECT_KEY)
+    if not payment_id:
+        return
+
+    reason = (update.message.text or "").strip()
+    if not reason:
+        await update.message.reply_text("دلیل رد را ارسال کنید.")
+        return
+
+    rec = db_get_payment_request(int(payment_id))
+    if not rec:
+        context.user_data.pop(PENDING_REJECT_KEY, None)
+        return
+
+    if rec.get("status") != PAYMENT_STATUS_PENDING:
+        context.user_data.pop(PENDING_REJECT_KEY, None)
+        return
+
+    db_set_payment_status(int(payment_id), PAYMENT_STATUS_REJECTED, admin_id=update.effective_user.id, admin_reason=reason)
+    plan_type = _plan_type_from_product_key(rec.get("product_key") or "")
+    if plan_type:
+        _reject_plan(int(rec.get("user_id") or 0), plan_type)
+
+    wallet_used = int(rec.get("wallet_used") or 0)
+    refund_line = ""
+    if wallet_used > 0:
+        db_add_wallet_balance(int(rec.get("user_id") or 0), wallet_used)
+        refund_line = f"\nمبلغ بازگشت به کیف پول: {_payment_amount_display(wallet_used)}"
+    msg_info = context.user_data.pop(PENDING_REJECT_MSG_KEY, None)
+    context.user_data.pop(PENDING_REJECT_KEY, None)
+    if msg_info and msg_info[0] and msg_info[1]:
+        try:
+            await context.bot.edit_message_reply_markup(chat_id=msg_info[0], message_id=msg_info[1], reply_markup=None)
+        except Exception:
+            pass
+
+    user_text = (
+        "❌ پرداخت شما رد شد.\n"
+        f"دلیل: {reason}\n"
+        f"شماره پرداخت: {payment_id}\n"
+        f"کد پرداخت: {rec.get('payment_code','—')}{refund_line}"
+    )
+    try:
+        await context.bot.send_message(int(rec.get("chat_id") or 0), user_text)
+    except Exception:
+        pass
+
+    await update.message.reply_text("❌ رد پرداخت ثبت شد.")
+
+
+async def on_menu_store(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    q = update.callback_query
+    if not q:
+        return
+    await q.answer()
+    if not is_admin(update):
+        await q.edit_message_text("دسترسی ندارید.")
+        return
+    await q.edit_message_text(_store_status_text(), parse_mode=ParseMode.HTML, reply_markup=store_menu_kb())
+
+
+async def on_store_set_price_plag(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    q = update.callback_query
+    if not q:
+        return ConversationHandler.END
+    await q.answer()
+    if not is_admin(update):
+        await q.edit_message_text("دسترسی ندارید.")
+        return ConversationHandler.END
+    await q.edit_message_text("قیمت چک پلاژياریسم را وارد کنید (عدد).", reply_markup=store_back_kb())
+    return WAITING_STORE_PRICE_PLAG
+
+
+async def receive_store_price_plag(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = (update.message.text or "").strip().replace(",", "") if update.message else ""
+    try:
+        val = int(text)
+        if val < 0:
+            raise ValueError
+    except Exception:
+        await update.message.reply_text("لطفاً فقط عدد معتبر وارد کنید.", reply_markup=store_back_kb())
+        return WAITING_STORE_PRICE_PLAG
+
+    db_set_setting(STORE_PRICE_PLAG_KEY, str(val))
+    await update.message.reply_text(_store_status_text(), parse_mode=ParseMode.HTML, reply_markup=store_menu_kb())
+    return ConversationHandler.END
+
+
+async def on_store_set_price_ai(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    q = update.callback_query
+    if not q:
+        return ConversationHandler.END
+    await q.answer()
+    if not is_admin(update):
+        await q.edit_message_text("دسترسی ندارید.")
+        return ConversationHandler.END
+    await q.edit_message_text("قیمت چک پلاژياریسم و AI را وارد کنید (عدد).", reply_markup=store_back_kb())
+    return WAITING_STORE_PRICE_AI
+
+
+async def receive_store_price_ai(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = (update.message.text or "").strip().replace(",", "") if update.message else ""
+    try:
+        val = int(text)
+        if val < 0:
+            raise ValueError
+    except Exception:
+        await update.message.reply_text("لطفاً فقط عدد معتبر وارد کنید.", reply_markup=store_back_kb())
+        return WAITING_STORE_PRICE_AI
+
+    db_set_setting(STORE_PRICE_PLAG_AI_KEY, str(val))
+    await update.message.reply_text(_store_status_text(), parse_mode=ParseMode.HTML, reply_markup=store_menu_kb())
+    return ConversationHandler.END
+
+
+async def on_store_set_card(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    q = update.callback_query
+    if not q:
+        return ConversationHandler.END
+    await q.answer()
+    if not is_admin(update):
+        await q.edit_message_text("دسترسی ندارید.")
+        return ConversationHandler.END
+    await q.edit_message_text("شماره کارت ۱۶ رقمی را وارد کنید.", reply_markup=store_back_kb())
+    return WAITING_STORE_CARD
+
+
+async def receive_store_card(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = (update.message.text or "").strip() if update.message else ""
+    digits = re.sub(r"\D", "", text)
+    if len(digits) != 16:
+        await update.message.reply_text("شماره کارت معتبر نیست (باید ۱۶ رقم باشد).", reply_markup=store_back_kb())
+        return WAITING_STORE_CARD
+
+    db_set_setting(STORE_CARD_KEY, digits)
+    await update.message.reply_text(_store_status_text(), parse_mode=ParseMode.HTML, reply_markup=store_menu_kb())
+    return ConversationHandler.END
+
+
+async def on_store_set_group(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    q = update.callback_query
+    if not q:
+        return ConversationHandler.END
+    await q.answer()
+    if not is_admin(update):
+        await q.edit_message_text("دسترسی ندارید.")
+        return ConversationHandler.END
+    await q.edit_message_text("شناسه گروه بررسی پرداخت را وارد کنید (مثلاً -1001234567890) یا clear برای حذف.", reply_markup=store_back_kb())
+    return WAITING_STORE_GROUP
+
+
+async def receive_store_group(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    text = (update.message.text or "").strip() if update.message else ""
+    if text.lower() == "clear":
+        db_set_setting(STORE_GROUP_KEY, "")
+        await update.message.reply_text(_store_status_text(), parse_mode=ParseMode.HTML, reply_markup=store_menu_kb())
+        return ConversationHandler.END
+
+    try:
+        val = int(text)
+    except Exception:
+        await update.message.reply_text("شناسه معتبر نیست.", reply_markup=store_back_kb())
+        return WAITING_STORE_GROUP
+
+    db_set_setting(STORE_GROUP_KEY, str(val))
+    await update.message.reply_text(_store_status_text(), parse_mode=ParseMode.HTML, reply_markup=store_menu_kb())
+    return ConversationHandler.END
+
 
 def main() -> None:
     logger.info("=== Bot starting ===")
