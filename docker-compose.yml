@@ -4,7 +4,8 @@ services:
     container_name: dastyar-bot
     restart: unless-stopped
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file: .env
     environment:
       - API_HOST=0.0.0.0
@@ -26,7 +27,8 @@ services:
     container_name: dastyar-download-bot
     restart: unless-stopped
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file: .env
     environment:
       - DB_TYPE=mysql
@@ -47,6 +49,11 @@ services:
       - MYSQL_USER=${DB_USER}
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
     volumes:
       - mysql_data:/var/lib/mysql
 

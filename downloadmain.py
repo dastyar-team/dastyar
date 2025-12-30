@@ -892,7 +892,13 @@ def _db_write():
         # PyMySQL connection context manager closes the connection; avoid that.
         yield
     else:
-        with _conn:
+        try:
+            yield
+            _conn.commit()
+        except Exception:
+            with suppress(Exception):
+                _conn.rollback()
+            raise
             yield
 
 def _db_execute(sql: str, params: Optional[Any] = None, *, many: bool = False):
