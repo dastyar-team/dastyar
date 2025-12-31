@@ -1846,6 +1846,12 @@ async def receive_email(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     user = ensure_user(update.effective_user.id, update.effective_user.username)
     result = request_email_verification(email, user_id=int(user.get("user_id")))
     if not result.get("ok"):
+        if result.get("error") == "email_in_use":
+            await update.message.reply_text(
+                "❗️ این ایمیل قبلاً تایید شده و برای حساب دیگری استفاده می‌شود.",
+                reply_markup=back_to_menu_kb(),
+            )
+            return WAITING_FOR_EMAIL
         if result.get("error") == "rate_limited":
             retry_after = int(result.get("retry_after") or 0)
             context.user_data["pending_email"] = email
@@ -1884,6 +1890,13 @@ async def receive_email_code(update: Update, context: ContextTypes.DEFAULT_TYPE)
     result = verify_email_code(pending_email, code)
     if not result.get("ok"):
         err = result.get("error")
+        if err == "email_in_use":
+            context.user_data.pop("pending_email", None)
+            await update.message.reply_text(
+                "❗️ این ایمیل قبلاً تایید شده و برای حساب دیگری استفاده می‌شود.",
+                reply_markup=back_to_menu_kb(),
+            )
+            return WAITING_FOR_EMAIL
         if err == "invalid_code":
             attempts_left = int(result.get("attempts_left") or 0)
             await update.message.reply_text(
@@ -3899,4 +3912,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

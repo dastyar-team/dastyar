@@ -354,6 +354,11 @@ async def receive_email(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 
     res = request_email_verification(update.effective_user.id, email)
     if not res.get("ok"):
+        if res.get("error") == "email_in_use":
+            text = _result_card(False, "این ایمیل قبلاً تایید شده و برای حساب دیگری استفاده می‌شود.")
+            kb = InlineKeyboardMarkup([[InlineKeyboardButton("⬅️ بازگشت", callback_data=CB_EMAIL_BACK)]])
+            await _send_new(update, context, text, kb)
+            return WAITING_EMAIL
         if res.get("error") == "rate_limited":
             cooldown = _cooldown_seconds(res)
             expires_in = int(res.get("expires_in") or 600)
@@ -426,6 +431,11 @@ async def receive_code(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         return ConversationHandler.END
 
     err = res.get("error")
+    if err == "email_in_use":
+        text = _result_card(False, "این ایمیل قبلاً تایید شده و برای حساب دیگری استفاده می‌شود.")
+        kb = build_verify_keyboard(cooldown=0)
+        await _send_new(update, context, text, kb)
+        return WAITING_CODE
     if err == "invalid_code":
         attempts_left = int(res.get("attempts_left") or 0)
         text = _result_card(False, f"کد اشتباه است. تلاش باقی‌مانده: {attempts_left}")
