@@ -475,6 +475,11 @@ def request_email_verification(email: str, user_id: Optional[int] = None) -> Dic
     em = (email or "").strip().lower()
     if not _valid_email(em):
         return {"ok": False, "error": "invalid_email"}
+    verified_user = db_get_verified_user_by_email(em)
+    if verified_user:
+        verified_id = int(verified_user.get("user_id") or 0)
+        if not user_id or verified_id != int(user_id):
+            return {"ok": False, "error": "email_in_use"}
     secret = _otp_secret()
     if not secret:
         logger.error("OTP secret missing")
@@ -568,6 +573,13 @@ def verify_email_code(email: str, code: str) -> Dict[str, Any]:
     rec = _db_get_latest_otp(em)
     if not rec:
         return {"ok": False, "error": "not_found"}
+
+    otp_user_id = int(rec.get("user_id") or 0)
+    verified_user = db_get_verified_user_by_email(em)
+    if verified_user:
+        verified_id = int(verified_user.get("user_id") or 0)
+        if verified_id and (not otp_user_id or verified_id != otp_user_id):
+            return {"ok": False, "error": "email_in_use"}
 
     if rec.get("verified_at"):
         return {"ok": False, "error": "already_verified"}
@@ -1254,6 +1266,19 @@ def db_get_user_by_email(email: str) -> Dict[str, Any]:
     if not em:
         return {}
     cur = _db_execute("SELECT * FROM users WHERE lower(email)=?", (em,))
+    row = cur.fetchone()
+    cur.close()
+    return dict(row) if row else {}
+
+
+def db_get_verified_user_by_email(email: str) -> Dict[str, Any]:
+    em = (email or "").strip().lower()
+    if not em:
+        return {}
+    cur = _db_execute(
+        "SELECT * FROM users WHERE lower(email)=? AND email_verified=1",
+        (em,),
+    )
     row = cur.fetchone()
     cur.close()
     return dict(row) if row else {}
