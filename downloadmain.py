@@ -948,6 +948,13 @@ def db_init() -> None:
                 plan_price INT,
                 plan_status VARCHAR(32),
                 plan_note TEXT,
+                plan_started_at BIGINT,
+                plan_expires_at BIGINT,
+                doi_quota_limit INT DEFAULT 0,
+                doi_quota_used INT DEFAULT 0,
+                doi_daily_limit INT DEFAULT 0,
+                doi_daily_used INT DEFAULT 0,
+                doi_daily_day INT DEFAULT 0,
                 user_token VARCHAR(64),
                 token_created_at DATETIME,
                 quota_free INT DEFAULT 0,
@@ -1072,6 +1079,13 @@ def db_init() -> None:
                 plan_price INTEGER,
                 plan_status TEXT,
                 plan_note TEXT,
+                plan_started_at INTEGER,
+                plan_expires_at INTEGER,
+                doi_quota_limit INTEGER DEFAULT 0,
+                doi_quota_used INTEGER DEFAULT 0,
+                doi_daily_limit INTEGER DEFAULT 0,
+                doi_daily_used INTEGER DEFAULT 0,
+                doi_daily_day INTEGER DEFAULT 0,
                 user_token TEXT UNIQUE,
                 token_created_at TEXT,
                 quota_free INTEGER DEFAULT 0,
@@ -1166,6 +1180,13 @@ def db_init() -> None:
             """)
     _ensure_column("users", "user_token", "TEXT" if not DB_IS_MYSQL else "VARCHAR(64)")
     _ensure_column("users", "token_created_at", "TEXT" if not DB_IS_MYSQL else "DATETIME")
+    _ensure_column("users", "plan_started_at", "INTEGER" if not DB_IS_MYSQL else "BIGINT")
+    _ensure_column("users", "plan_expires_at", "INTEGER" if not DB_IS_MYSQL else "BIGINT")
+    _ensure_column("users", "doi_quota_limit", "INTEGER" if not DB_IS_MYSQL else "INT")
+    _ensure_column("users", "doi_quota_used", "INTEGER" if not DB_IS_MYSQL else "INT")
+    _ensure_column("users", "doi_daily_limit", "INTEGER" if not DB_IS_MYSQL else "INT")
+    _ensure_column("users", "doi_daily_used", "INTEGER" if not DB_IS_MYSQL else "INT")
+    _ensure_column("users", "doi_daily_day", "INTEGER" if not DB_IS_MYSQL else "INT")
     _ensure_column("users", "quota_free", "INTEGER" if not DB_IS_MYSQL else "INT")
     _ensure_column("users", "quota_paid", "INTEGER" if not DB_IS_MYSQL else "INT")
     _ensure_column("users", "used_free", "INTEGER" if not DB_IS_MYSQL else "INT")
@@ -1275,6 +1296,80 @@ def db_set_plan(user_id: int, ptype: str, label: str, price: int, status: str, n
                SET plan_type=?, plan_label=?, plan_price=?, plan_status=?, plan_note=?, updated_at=CURRENT_TIMESTAMP
              WHERE user_id=?
         """, (ptype, label, price, status, note, user_id))
+        cur.close()
+
+
+def db_set_plan_period(user_id: int, *, started_at: Optional[int], expires_at: Optional[int]) -> None:
+    start_val = int(started_at) if started_at else None
+    end_val = int(expires_at) if expires_at else None
+    with _db_write():
+        cur = _db_execute(
+            """
+            UPDATE users
+               SET plan_started_at=?, plan_expires_at=?, updated_at=CURRENT_TIMESTAMP
+             WHERE user_id=?
+            """,
+            (start_val, end_val, int(user_id)),
+        )
+        cur.close()
+
+
+def db_set_doi_quota(user_id: int, *, limit: int, used: int = 0) -> None:
+    with _db_write():
+        cur = _db_execute(
+            """
+            UPDATE users
+               SET doi_quota_limit=?, doi_quota_used=?, updated_at=CURRENT_TIMESTAMP
+             WHERE user_id=?
+            """,
+            (int(limit), int(used), int(user_id)),
+        )
+        cur.close()
+
+
+def db_inc_doi_quota_used(user_id: int, inc: int) -> None:
+    if int(inc) <= 0:
+        return
+    with _db_write():
+        cur = _db_execute(
+            """
+            UPDATE users
+               SET doi_quota_used = COALESCE(doi_quota_used, 0) + ?,
+                   updated_at = CURRENT_TIMESTAMP
+             WHERE user_id = ?
+            """,
+            (int(inc), int(user_id)),
+        )
+        cur.close()
+
+
+def db_set_doi_daily_quota(user_id: int, *, limit: int, used: int = 0, day_key: int = 0) -> None:
+    with _db_write():
+        cur = _db_execute(
+            """
+            UPDATE users
+               SET doi_daily_limit=?, doi_daily_used=?, doi_daily_day=?, updated_at=CURRENT_TIMESTAMP
+             WHERE user_id=?
+            """,
+            (int(limit), int(used), int(day_key), int(user_id)),
+        )
+        cur.close()
+
+
+def db_inc_doi_daily_used(user_id: int, inc: int, *, day_key: int) -> None:
+    if int(inc) <= 0:
+        return
+    with _db_write():
+        cur = _db_execute(
+            """
+            UPDATE users
+               SET doi_daily_used = COALESCE(doi_daily_used, 0) + ?,
+                   doi_daily_day = ?,
+                   updated_at = CURRENT_TIMESTAMP
+             WHERE user_id = ?
+            """,
+            (int(inc), int(day_key), int(user_id)),
+        )
         cur.close()
 
 def db_count_dois(user_id: int) -> int:
