@@ -9,6 +9,8 @@ import json
 import random
 import re
 import sys
+import time
+from datetime import datetime
 from pathlib import Path
 from typing import Final, Dict, Any, List, Tuple, Optional
 
@@ -32,7 +34,9 @@ from telegram.ext import (
 from downloadmain import (  # noqa: F401  # type: ignore
     CFG, logger, catlog,
     db_init, db_upsert_user, db_get_user, db_set_seen_welcome, db_set_email, db_set_delivery,
-    db_set_plan, db_add_quota, db_count_dois, db_add_dois, db_get_or_create_token, db_set_new_token,
+    db_set_plan, db_set_plan_period, db_set_doi_quota, db_inc_doi_quota_used,
+    db_set_doi_daily_quota, db_inc_doi_daily_used,
+    db_add_quota, db_count_dois, db_add_dois, db_get_or_create_token, db_set_new_token,
     db_get_setting, db_set_setting,
     db_create_payment_request, db_get_payment_request, db_get_open_payment_request,
     db_update_payment_receipt, db_set_payment_review_message, db_set_payment_status,
@@ -195,24 +199,34 @@ PLAN_PRODUCTS = {
         "base_price": 240000,
         "quota_paid": 40,
         "note": "اعتبار ۱ ساله",
+        "duration_days": 365,
+        "doi_limit": 40,
     },
     "normal_100": {
         "label": "🧰 پلن معمولی — ۱۰۰ مقاله (اعتبار ۱ سال)",
         "base_price": 500000,
         "quota_paid": 100,
         "note": "اعتبار ۱ ساله",
+        "duration_days": 365,
+        "doi_limit": 100,
     },
     "premium_1m": {
-        "label": "⭐️ پریمیوم — ۱ ماه (۱۵ مقاله در روز)",
+        "label": "⭐️ پریمیوم — ۱ ماه (نامحدود با سقف ۱۵ در روز)",
         "base_price": 240000,
         "quota_paid": 450,
-        "note": "۱۵ مقاله/روز",
+        "note": "دانلود نامحدود (۱۵ در روز)",
+        "duration_days": 30,
+        "doi_unlimited": True,
+        "daily_limit": 15,
     },
     "premium_3m": {
-        "label": "⭐️ پریمیوم — ۳ ماه (۱۵ مقاله در روز)",
+        "label": "⭐️ پریمیوم — ۳ ماه (نامحدود با سقف ۱۵ در روز)",
         "base_price": 600000,
         "quota_paid": 1350,
-        "note": "۱۵ مقاله/روز",
+        "note": "دانلود نامحدود (۱۵ در روز)",
+        "duration_days": 90,
+        "doi_unlimited": True,
+        "daily_limit": 15,
     },
 }
 
@@ -256,6 +270,209 @@ def _plan_quota_paid(plan_type: str) -> int:
 def _plan_note(plan_type: str) -> str:
     info = _plan_info(plan_type)
     return str(info.get("note") or "") if info else ""
+
+
+def _plan_duration_days(plan_type: str) -> int:
+    info = _plan_info(plan_type)
+    return int(info.get("duration_days") or 0) if info else 0
+
+
+def _plan_doi_limit(plan_type: str) -> int:
+    info = _plan_info(plan_type)
+    return int(info.get("doi_limit") or 0) if info else 0
+
+
+def _plan_is_unlimited(plan_type: str) -> bool:
+    info = _plan_info(plan_type)
+    return bool(info and info.get("doi_unlimited"))
+
+
+PLAN_STATUS_ACTIVE: Final[str] = "فعال"
+PLAN_STATUS_EXPIRED: Final[str] = "منقضی"
+
+
+def _plan_daily_limit(plan_type: str) -> int:
+    info = _plan_info(plan_type)
+    return int(info.get("daily_limit") or 0) if info else 0
+
+
+def _now_ts() -> int:
+    return int(time.time())
+
+
+def _today_key() -> int:
+    return int(datetime.now().strftime("%Y%m%d"))
+
+
+def _format_expiry_date(ts: int) -> str:
+    if not ts:
+        return "—"
+    return datetime.fromtimestamp(int(ts)).strftime("%Y/%m/%d")
+
+
+def _sync_plan_window(user: Dict[str, Any], plan_type: str) -> Dict[str, Any]:
+    if user.get("plan_status") != PLAN_STATUS_ACTIVE:
+        return user
+    duration_days = _plan_duration_days(plan_type)
+    if duration_days <= 0:
+        return user
+    started_at = int(user.get("plan_started_at") or 0)
+    expires_at = int(user.get("plan_expires_at") or 0)
+    if started_at <= 0 or expires_at <= 0 or expires_at <= started_at:
+        now = _now_ts()
+        started_at = now
+        expires_at = now + (duration_days * 86400)
+        user_id = int(user.get("user_id") or 0)
+        if user_id:
+            db_set_plan_period(user_id, started_at=started_at, expires_at=expires_at)
+        user["plan_started_at"] = started_at
+        user["plan_expires_at"] = expires_at
+    return user
+
+
+def _sync_doi_quota(user: Dict[str, Any], plan_type: str) -> Dict[str, Any]:
+    user_id = int(user.get("user_id") or 0)
+    if not user_id:
+        return user
+    if _plan_is_unlimited(plan_type):
+        if int(user.get("doi_quota_limit") or 0) != 0 or int(user.get("doi_quota_used") or 0) != 0:
+            db_set_doi_quota(user_id, limit=0, used=0)
+            user["doi_quota_limit"] = 0
+            user["doi_quota_used"] = 0
+        return user
+    limit = int(user.get("doi_quota_limit") or 0)
+    if limit <= 0:
+        limit = _plan_doi_limit(plan_type)
+        used = int(user.get("doi_quota_used") or 0)
+        used = min(used, limit) if limit > 0 else used
+        if limit > 0:
+            db_set_doi_quota(user_id, limit=limit, used=used)
+            user["doi_quota_limit"] = limit
+            user["doi_quota_used"] = used
+    return user
+
+
+def _sync_doi_daily_quota(user: Dict[str, Any], plan_type: str) -> Dict[str, Any]:
+    user_id = int(user.get("user_id") or 0)
+    if not user_id:
+        return user
+    plan_daily = _plan_daily_limit(plan_type)
+    daily_limit = int(user.get("doi_daily_limit") or 0)
+    daily_used = int(user.get("doi_daily_used") or 0)
+    day_key = int(user.get("doi_daily_day") or 0)
+    today = _today_key()
+
+    if plan_daily <= 0:
+        if daily_limit or daily_used or day_key:
+            db_set_doi_daily_quota(user_id, limit=0, used=0, day_key=0)
+            user["doi_daily_limit"] = 0
+            user["doi_daily_used"] = 0
+            user["doi_daily_day"] = 0
+        return user
+
+    if day_key != today:
+        daily_used = 0
+        day_key = today
+    if daily_limit != plan_daily or user.get("doi_daily_day") != day_key:
+        db_set_doi_daily_quota(user_id, limit=plan_daily, used=daily_used, day_key=day_key)
+        user["doi_daily_limit"] = plan_daily
+        user["doi_daily_used"] = daily_used
+        user["doi_daily_day"] = day_key
+    return user
+
+
+def _doi_access_status(user: Dict[str, Any]) -> Dict[str, Any]:
+    plan_type = str(user.get("plan_type") or "").strip()
+    status = str(user.get("plan_status") or "").strip()
+    if not plan_type:
+        return {"ok": False, "reason": "no_plan"}
+    if status != PLAN_STATUS_ACTIVE:
+        return {"ok": False, "reason": "inactive", "status": status or "?"}
+    user = _sync_plan_window(user, plan_type)
+    expires_at = int(user.get("plan_expires_at") or 0)
+    if expires_at and _now_ts() > expires_at:
+        user_id = int(user.get("user_id") or 0)
+        if user_id:
+            label = (user.get("plan_label") or _plan_label(plan_type))
+            price_val = user.get("plan_price")
+            price = int(price_val) if isinstance(price_val, int) else _plan_base_price(plan_type)
+            note = (user.get("plan_note") or _plan_note(plan_type))
+            db_set_plan(user_id, plan_type, label, price, PLAN_STATUS_EXPIRED, note)
+        return {"ok": False, "reason": "expired", "expires_at": expires_at}
+    if _plan_is_unlimited(plan_type):
+        user = _sync_doi_daily_quota(user, plan_type)
+        daily_limit = int(user.get("doi_daily_limit") or 0)
+        daily_used = int(user.get("doi_daily_used") or 0)
+        daily_remaining = max(0, daily_limit - daily_used) if daily_limit > 0 else 0
+        if daily_limit > 0 and daily_remaining <= 0:
+            return {"ok": False, "reason": "daily_exhausted", "daily_limit": daily_limit, "expires_at": expires_at}
+        return {
+            "ok": True,
+            "unlimited": True,
+            "expires_at": expires_at,
+            "plan_type": plan_type,
+            "daily_limit": daily_limit,
+            "daily_used": daily_used,
+            "daily_remaining": daily_remaining,
+        }
+    user = _sync_doi_quota(user, plan_type)
+    limit = int(user.get("doi_quota_limit") or 0)
+    used = int(user.get("doi_quota_used") or 0)
+    remaining = max(0, limit - used) if limit > 0 else 0
+    if limit <= 0:
+        return {"ok": False, "reason": "limit_unset", "plan_type": plan_type}
+    if remaining <= 0:
+        return {"ok": False, "reason": "quota_exhausted", "limit": limit, "used": used, "expires_at": expires_at}
+    return {
+        "ok": True,
+        "limit": limit,
+        "used": used,
+        "remaining": remaining,
+        "expires_at": expires_at,
+        "plan_type": plan_type,
+    }
+
+
+def _doi_status_lines(access: Dict[str, Any], buffer_count: int = 0) -> List[str]:
+    if not access or not access.get("ok"):
+        return []
+    expires_at = int(access.get("expires_at") or 0)
+    lines: List[str] = []
+    if access.get("unlimited"):
+        line = "?? ??? ??????? ????"
+        if expires_at:
+            line += f" ?? {_format_expiry_date(expires_at)}"
+        lines.append(line)
+        daily_limit = int(access.get("daily_limit") or 0)
+        if daily_limit > 0:
+            daily_remaining = int(access.get("daily_remaining") or 0)
+            daily_after = max(0, daily_remaining - max(0, int(buffer_count or 0)))
+            lines.append(f"?? ????? ?????: {daily_after} ?? {daily_limit} ???? ?????")
+        return lines
+    limit = int(access.get("limit") or 0)
+    remaining = int(access.get("remaining") or 0)
+    remaining_after = max(0, remaining - max(0, int(buffer_count or 0)))
+    if limit > 0:
+        lines.append(f"?? ????? DOI: {remaining_after} ?? {limit} ???? ?????")
+    if expires_at:
+        lines.append(f"? ?????? ??: {_format_expiry_date(expires_at)}")
+    return lines
+
+
+def _doi_block_message(access: Dict[str, Any]) -> str:
+    reason = access.get("reason")
+    if reason == "no_plan":
+        return "???? ????? DOI ???? ?????? ???? ????? ?????. ?? ??? ????? ??????? ??? ??? ?? ???? ????."
+    if reason == "inactive":
+        status = access.get("status") or "?"
+        return f"????? ?????? ???: {status}. ????? ????? ????? DOI ??????."
+    if reason == "expired":
+        return "?????? ??? ????? ??? ???. ????? ?? ??? ????? ??????? ????? ????."
+    if reason == "quota_exhausted":
+        return "????? DOI ??? ???? ??? ?????? ???? ??? ???."
+    if reason == "daily_exhausted":
+        return "????? ????? ??? ???? ??? ???. ????? ???? ?????? ???? ????."
+    return "????? ????? DOI ?? ??? ???? ???? ????. ????? ?? ???????? ???? ??????."
 
 
 
@@ -707,16 +924,18 @@ def build_token_text(token: str) -> str:
         "این توکن را در صفحهٔ Options افزونه وارد کنید. اگر گم شد یا شک داری کسی دارد استفاده می‌کند، توکن جدید بساز.\n\n"
         f"<b>توکن شما:</b>\n<code>{htmlmod.escape(token)}</code>"
     )
-def build_doi_control_text(buffer_count: int) -> str:
+def build_doi_control_text(buffer_count: int, *, status_lines: Optional[List[str]] = None) -> str:
+    status_block = ""
+    if status_lines:
+        status_block = "\n".join(status_lines) + "\n\n"
     return (
-        "📎 لطفاً DOI ارسال کنید.\n"
-        "<b>هر چند تا خواستید DOI بفرستید؛ اما در هر پیام فقط یک DOI.</b>\n\n"
-        f"🔢 تعداد DOIهای موقت: <b>{buffer_count}</b>\n"
-        "وقتی تمام شد، دکمهٔ «پایان ارسال DOIها» را بزنید.\n"
-        "برای خروج: /cancel"
+        "?? ????? DOI ????? ????.\n"
+        "<b>?? ??? ?? ??????? DOI ???????? ??? ?? ?? ???? ??? ?? DOI.</b>\n\n"
+        f"{status_block}"
+        f"?? ????? DOI??? ????: <b>{buffer_count}</b>\n"
+        "???? ???? ??? ????? ?????? ????? DOI??? ?? ?????.\n"
+        "???? ???: /cancel"
     )
-
-
 
 # =========================
 # نمایش منو
@@ -1725,11 +1944,43 @@ def _activate_plan(user_id: int, plan_type: str) -> Dict[str, Any]:
     price_val = user.get("plan_price") if user else None
     price = int(price_val) if isinstance(price_val, int) else _plan_base_price(plan_type)
     note = (user.get("plan_note") if user else "") or _plan_note(plan_type)
-    db_set_plan(int(user_id), plan_type, label, price, "فعال", note)
+    db_set_plan(int(user_id), plan_type, label, price, PLAN_STATUS_ACTIVE, note)
+
+    duration_days = _plan_duration_days(plan_type)
+    started_at = _now_ts()
+    expires_at = started_at + (duration_days * 86400) if duration_days > 0 else 0
+    if duration_days > 0:
+        db_set_plan_period(int(user_id), started_at=started_at, expires_at=expires_at)
+
+    if _plan_is_unlimited(plan_type):
+        db_set_doi_quota(int(user_id), limit=0, used=0)
+        doi_limit = 0
+        doi_unlimited = True
+    else:
+        doi_limit = _plan_doi_limit(plan_type)
+        if doi_limit > 0:
+            db_set_doi_quota(int(user_id), limit=doi_limit, used=0)
+        doi_unlimited = False
+
+    daily_limit = _plan_daily_limit(plan_type)
+    if daily_limit > 0:
+        db_set_doi_daily_quota(int(user_id), limit=daily_limit, used=0, day_key=_today_key())
+    else:
+        db_set_doi_daily_quota(int(user_id), limit=0, used=0, day_key=0)
+
     quota_add = _plan_quota_paid(plan_type)
     if quota_add > 0:
         db_add_quota(int(user_id), paid_add=quota_add)
-    return {"label": label, "price": price, "quota_add": quota_add}
+    return {
+        "label": label,
+        "price": price,
+        "quota_add": quota_add,
+        "plan_type": plan_type,
+        "doi_limit": doi_limit,
+        "doi_unlimited": doi_unlimited,
+        "daily_limit": daily_limit,
+        "expires_at": expires_at,
+    }
 
 
 def _reject_plan(user_id: int, plan_type: str) -> None:
@@ -1742,18 +1993,20 @@ def _reject_plan(user_id: int, plan_type: str) -> None:
 
 async def on_menu_topup(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     q = update.callback_query; await q.answer()
-    extra = f"{CFG.EXTRA_EMAIL_DELIVERY_FEE:,}".replace(",", "٬")
-    text = ("💳 <b>خرید اشتراک</b>\n\n"
-            "🧰 <b>پلن معمولی</b>\n"
-            "• ۴۰ مقاله — ۲۴۰٬۰۰۰ تومان\n"
-            "• ۱۰۰ مقاله — ۵۰۰٬۰۰۰ تومان\n"
-            f"⏳ اعتبار: ۱ ساله | (ارسال از طریق ایمیل: +{extra} تومان)\n\n"
-            "⭐️ <b>پلن اشتراک پریمیوم</b>\n"
-            "• دانلود نامحدود (محدودیت روزانه ۱۵ مقاله)\n"
-            "قیمت‌ها:\n"
-            "• ۱ ماه — ۲۴۰٬۰۰۰ تومان\n"
-            "• ۳ ماه — ۶۰۰٬۰۰۰ تومان\n"
-            "⏳ اعتبار: بر اساس مدت اشتراک")
+    extra = f"{CFG.EXTRA_EMAIL_DELIVERY_FEE:,}".replace(",", "?")
+    text = (
+        "?? <b>???? ??????</b>\n\n"
+        "?? <b>??? ??????</b>\n"
+        "? ?? ????? ? ??????? ?????\n"
+        "? ??? ????? ? ??????? ?????\n"
+        f"? ??????: ? ???? | (????? ?? ???? ?????: +{extra} ?????)\n\n"
+        "?? <b>??? ?????? ???????</b>\n"
+        "? ?????? ??????? (?? ????? ?? ???)\n"
+        "???????:\n"
+        "? ? ??? ? ??????? ?????\n"
+        "? ? ??? ? ??????? ?????\n"
+        "???????: ?? ????? ?? ???"
+    )
     await q.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=topup_menu_keyboard())
 
 
@@ -1809,11 +2062,9 @@ async def on_plan_normal(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 async def on_plan_premium(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     q = update.callback_query; await q.answer()
-    text = ("⭐️ <b>پلن اشتراکی پریمیوم</b>\n"
-            "مدت اشتراک را انتخاب کنید:\n"
-            "• ۱ ماه — ۲۴۰٬۰۰۰ تومان\n"
-            "• ۳ ماه — ۶۰۰٬۰۰۰ تومان\n"
-            "محدودیت: حداکثر ۱۵ مقاله در روز")
+    text = ("?? <b>??? ?????? ???????</b>\n"
+            "??? ?????? ?? ?????? ????:\n"
+            "???????: ?? ????? ?? ???")
     await q.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=premium_subplan_keyboard())
 
 async def on_select_normal_40(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -1841,22 +2092,26 @@ async def on_select_normal_100(update: Update, context: ContextTypes.DEFAULT_TYP
 async def on_select_premium_1m(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     q = update.callback_query; await q.answer()
     context.user_data["user_id"] = update.effective_user.id
-    set_pending_plan(context.user_data, "⭐️ پریمیوم — ۱ ماه (۱۵ مقاله در روز)", "premium_1m", 240000, "۱۵ مقاله/روز")
-    await q.edit_message_text("⭐️ <b>پلن پریمیوم (۱ ماه)</b>\n"
-                              "• قیمت: ۲۴۰٬۰۰۰ تومان\n"
-                              "• محدودیت: ۱۵ مقاله در روز\n\n"
-                              "اگر موافقی، «تایید پلن» را بزن.",
-                              parse_mode=ParseMode.HTML, reply_markup=confirm_keyboard())
+    set_pending_plan(context.user_data, "?? ??????? ? ? ??? (??????? ?? ??? ?? ?? ???)", "premium_1m", 240000, "?????? ??????? (?? ?? ???)")
+    await q.edit_message_text(
+        "?? <b>??? ??????? (? ???)</b>\n"
+        "? ????: ??????? ?????\n"
+        "? ?????? ??????? (?? ????? ?? ???)\n\n"
+        "????? ???? ?????? ????? ????.",
+        parse_mode=ParseMode.HTML, reply_markup=confirm_keyboard()
+    )
 
 async def on_select_premium_3m(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     q = update.callback_query; await q.answer()
     context.user_data["user_id"] = update.effective_user.id
-    set_pending_plan(context.user_data, "⭐️ پریمیوم — ۳ ماه (۱۵ مقاله در روز)", "premium_3m", 600000, "۱۵ مقاله/روز")
-    await q.edit_message_text("⭐️ <b>پلن پریمیوم (۳ ماه)</b>\n"
-                              "• قیمت: ۶۰۰٬۰۰۰ تومان\n"
-                              "• محدودیت: ۱۵ مقاله در روز\n\n"
-                              "اگر موافقی، «تایید پلن» را بزن.",
-                              parse_mode=ParseMode.HTML, reply_markup=confirm_keyboard())
+    set_pending_plan(context.user_data, "?? ??????? ? ? ??? (??????? ?? ??? ?? ?? ???)", "premium_3m", 600000, "?????? ??????? (?? ?? ???)")
+    await q.edit_message_text(
+        "?? <b>??? ??????? (? ???)</b>\n"
+        "? ????: ??????? ?????\n"
+        "? ?????? ??????? (?? ????? ?? ???)\n\n"
+        "????? ???? ?????? ????? ????.",
+        parse_mode=ParseMode.HTML, reply_markup=confirm_keyboard()
+    )
 
 async def on_confirm_plan(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     q = update.callback_query; await q.answer()
@@ -1981,7 +2236,14 @@ async def on_plan_wallet_pay(update: Update, context: ContextTypes.DEFAULT_TYPE)
         balance_after = int(db_get_user(int(user.get("user_id"))).get("wallet_balance") or 0)
         balance_text = f"{balance_after:,}".replace(",", "٬")
         quota_add = summary.get("quota_add") or 0
-        quota_line = f"\n• سهمیه فعال‌شده: {quota_add}" if quota_add else ""
+        if summary.get("doi_unlimited"):
+            daily_limit = int(summary.get("daily_limit") or 0)
+            if daily_limit > 0:
+                quota_line = f"\n? ????? ????????: ??????? (?????? {daily_limit} ?? ???)"
+            else:
+                quota_line = "\n? ????? ????????: ???????"
+        else:
+            quota_line = f"\n? ????? ????????: {quota_add}" if quota_add else ""
         await context.bot.send_message(
             update.effective_chat.id,
             "✅ پرداخت با کیف پول انجام شد و اشتراک شما فعال گردید.\n"
@@ -2005,21 +2267,37 @@ async def on_plan_wallet_pay(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 # ---- DOI Conversation
 async def enter_doi_flow(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    ensure_user(update.effective_user.id, update.effective_user.username)
+    user = ensure_user(update.effective_user.id, update.effective_user.username)
     q = update.callback_query; await q.answer()
+    access = _doi_access_status(user)
+    if not access.get("ok"):
+        await q.edit_message_text(_doi_block_message(access), reply_markup=back_to_menu_kb())
+        return ConversationHandler.END
     context.user_data["doi_buffer"] = []
-    sent = await q.edit_message_text(build_doi_control_text(0), reply_markup=doi_control_kb(), parse_mode=ParseMode.HTML)
+    sent = await q.edit_message_text(
+        build_doi_control_text(0, status_lines=_doi_status_lines(access, 0)),
+        reply_markup=doi_control_kb(),
+        parse_mode=ParseMode.HTML,
+    )
     context.user_data["doi_ctrl"] = (sent.chat_id, sent.message_id)
     return WAITING_FOR_DOI
 
-async def _update_doi_ctrl(context: ContextTypes.DEFAULT_TYPE, chat_id: int, msg_id: int, count: int) -> None:
+async def _update_doi_ctrl(
+    context: ContextTypes.DEFAULT_TYPE,
+    chat_id: int,
+    msg_id: int,
+    count: int,
+    status_lines: Optional[List[str]] = None,
+) -> None:
     try:
         await context.bot.edit_message_text(chat_id=chat_id, message_id=msg_id,
-            text=build_doi_control_text(count), parse_mode=ParseMode.HTML, reply_markup=doi_control_kb())
+            text=build_doi_control_text(count, status_lines=status_lines),
+            parse_mode=ParseMode.HTML, reply_markup=doi_control_kb())
     except Exception as e:
         logger.warning("ctrl_update_fail: %s", e)
 
 async def receive_doi(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    user = ensure_user(update.effective_user.id, update.effective_user.username)
     text = (update.message.text or "").strip()
     found = DOI_REGEX.findall(text)
     if len(found) != 1:
@@ -2029,6 +2307,12 @@ async def receive_doi(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
     if not doi:
         await update.message.reply_text("❗️ DOI معتبر نیست.", reply_markup=doi_control_kb())
         return WAITING_FOR_DOI
+    access = _doi_access_status(user)
+    if not access.get("ok"):
+        await update.message.reply_text(_doi_block_message(access), reply_markup=back_to_menu_kb())
+        context.user_data["doi_buffer"] = []
+        context.user_data.pop("doi_ctrl", None)
+        return ConversationHandler.END
     buf: List[str] = context.user_data.get("doi_buffer", [])
     if doi in buf:                                  # ← جلوگیری از تکرار
         await update.message.reply_text(
@@ -2036,11 +2320,30 @@ async def receive_doi(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
             reply_markup=doi_control_kb()
         )
         return WAITING_FOR_DOI
+    if not access.get("unlimited"):
+        remaining = int(access.get("remaining") or 0)
+        if remaining <= len(buf):
+            await update.message.reply_text(
+                "سهمیهٔ شما تکمیل شده است. لطفاً روی «پایان ارسال DOIها» بزنید.",
+                reply_markup=doi_control_kb(),
+            )
+            return WAITING_FOR_DOI
+    else:
+        daily_limit = int(access.get("daily_limit") or 0)
+        if daily_limit > 0:
+            daily_remaining = int(access.get("daily_remaining") or 0)
+            if daily_remaining <= len(buf):
+                await update.message.reply_text(
+                    "?????? ????? ??? ????? ??? ???. ????? ??? ?????? ????? DOI??? ?????.",
+                    reply_markup=doi_control_kb(),
+                )
+                return WAITING_FOR_DOI
+
     buf.append(doi); context.user_data["doi_buffer"] = buf
     await update.message.reply_text(f"✅ DOI ثبت شد:\n{doi}")
     ctrl = context.user_data.get("doi_ctrl")
     if ctrl:
-        await _update_doi_ctrl(context, ctrl[0], ctrl[1], len(buf))
+        await _update_doi_ctrl(context, ctrl[0], ctrl[1], len(buf), _doi_status_lines(access, len(buf)))
     return WAITING_FOR_DOI
 
 async def finish_doi(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -2048,21 +2351,58 @@ async def finish_doi(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user = ensure_user(update.effective_user.id, update.effective_user.username)
     buf: List[str] = context.user_data.get("doi_buffer", [])
     if not buf:
-        await q.edit_message_text("هیچ DOI موجود نیست. ابتدا DOI بفرستید.", reply_markup=doi_control_kb())
+        await q.edit_message_text("??? DOI ????? ????. ????? DOI ???????.", reply_markup=doi_control_kb())
         return WAITING_FOR_DOI
+    access = _doi_access_status(user)
+    if not access.get("ok"):
+        await q.edit_message_text(_doi_block_message(access), reply_markup=back_to_menu_kb())
+        context.user_data["doi_buffer"] = []
+        context.user_data.pop("doi_ctrl", None)
+        return ConversationHandler.END
+
+    skipped = 0
+    if not access.get("unlimited"):
+        remaining = int(access.get("remaining") or 0)
+        if remaining <= 0:
+            await q.edit_message_text(_doi_block_message({"reason": "quota_exhausted"}), reply_markup=back_to_menu_kb())
+            context.user_data["doi_buffer"] = []
+            context.user_data.pop("doi_ctrl", None)
+            return ConversationHandler.END
+        if len(buf) > remaining:
+            skipped = len(buf) - remaining
+            buf = buf[:remaining]
+    else:
+        daily_limit = int(access.get("daily_limit") or 0)
+        if daily_limit > 0:
+            daily_remaining = int(access.get("daily_remaining") or 0)
+            if daily_remaining <= 0:
+                await q.edit_message_text(_doi_block_message({"reason": "daily_exhausted"}), reply_markup=back_to_menu_kb())
+                context.user_data["doi_buffer"] = []
+                context.user_data.pop("doi_ctrl", None)
+                return ConversationHandler.END
+            if len(buf) > daily_remaining:
+                skipped = len(buf) - daily_remaining
+                buf = buf[:daily_remaining]
 
     inserted = db_add_dois(user["user_id"], buf)
+    if not access.get("unlimited"):
+        db_inc_doi_quota_used(int(user["user_id"]), inserted)
+    else:
+        daily_limit = int(access.get("daily_limit") or 0)
+        if daily_limit > 0:
+            db_inc_doi_daily_used(int(user["user_id"]), inserted, day_key=_today_key())
     context.user_data["doi_buffer"] = []; context.user_data.pop("doi_ctrl", None)
 
+    skipped_line = f"\n?? ????? DOI ???? ?? ?????: <b>{skipped}</b>" if skipped else ""
     await q.edit_message_text(
-        f"✅ ارسال DOIها تمام شد.\nتعداد ذخیره‌شده: <b>{inserted}</b>\n\n"
-        "🔎 در حال واکشی عنوان/سال، تعیین دسته‌بندی با هوش مصنوعی، و تلاش برای ارسال PDF…",
+        f"? ????? DOI?? ???? ??.\n????? ?????????: <b>{inserted}</b>\n\n"
+        f"?? ?? ??? ????? DOI?? ? ??????/????? PDF ?????{skipped_line}",
         parse_mode=ParseMode.HTML,
         reply_markup=back_to_menu_kb()
     )
 
     chat_id = update.effective_chat.id
-    # پردازش موازی در پس‌زمینه به‌همراه رهگیری خطا
+    # ?????? ??????? ?? ???? ?? ???? ????? ???? ???? ??? ????
     active_tasks: List[asyncio.Task] = context.user_data.setdefault("active_doi_tasks", [])
     task = asyncio.create_task(process_dois_batch(user["user_id"], buf, chat_id, context.bot))
     active_tasks.append(task)
@@ -2081,7 +2421,7 @@ async def finish_doi(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                 with contextlib.suppress(Exception):
                     await context.bot.send_message(
                         chat_id,
-                        "❗️ پردازش DOI با خطا مواجه شد. دوباره تلاش کنید یا با پشتیبانی تماس بگیرید."
+                        "?? ?????? DOI ?? ??? ????? ??. ?????? ???? ???? ?? ?? ???????? ???? ??????."
                     )
 
             asyncio.create_task(_notify_failure())
@@ -2135,38 +2475,58 @@ async def fallback_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         doi = normalize_doi(found[0])
         if not doi:
             return
-        # اگر قبلاً در همین چت کنترل DOI داریم، از همان استفاده کن
+        user = ensure_user(update.effective_user.id, update.effective_user.username)
+        access = _doi_access_status(user)
+        if not access.get("ok"):
+            await update.message.reply_text(_doi_block_message(access), reply_markup=back_to_menu_kb())
+            return
+        # ??? ????? ?? ???? ?? ????? DOI ?????? ?? ???? ??????? ??
         ctrl = context.user_data.get("doi_ctrl")
 
-        # اگر کنترل موجود نیست، پیام کنترل جدید بفرست
+        # ??? ????????? ???? ????? ????? ??
         if not ctrl:
             sent = await update.message.reply_text(
-                build_doi_control_text(0),
+                build_doi_control_text(0, status_lines=_doi_status_lines(access, 0)),
                 reply_markup=doi_control_kb(),
                 parse_mode=ParseMode.HTML
             )
             context.user_data["doi_ctrl"] = (sent.chat_id, sent.message_id)
             context.user_data["doi_buffer"] = []
 
-        # DOI را مثل receive_doi پردازش کن
+        # DOI ?? ??? receive_doi ?????? ??
         buf: List[str] = context.user_data.get("doi_buffer", [])
-        if doi in buf:          # ← تکراری است؛ کاری نکن
+        if doi in buf:          # ?????? ???? ???? ???
             return
+
+        if not access.get("unlimited"):
+            remaining = int(access.get("remaining") or 0)
+            if remaining <= len(buf):
+                await update.message.reply_text(
+                    "?????? ??? ????? ??? ???. ????? ??? ?????? ????? DOI??? ?????.",
+                    reply_markup=doi_control_kb(),
+                )
+                return
+
+        else:
+            daily_remaining = int(access.get("daily_remaining") or 0)
+            if daily_remaining <= len(buf):
+                await update.message.reply_text(
+                    "?????? ????? ??? ????? ??? ???. ????? ??? ?????? ????? DOI??? ?????.",
+                    reply_markup=doi_control_kb(),
+                )
+                return
 
         buf.append(doi)
         context.user_data["doi_buffer"] = buf
 
-
-        # آپدیت شمارنده در پیام کنترل
+        # ??????? ??????? (?? ????? ?? ???)
         ctrl = context.user_data.get("doi_ctrl")
         if ctrl:
-            await _update_doi_ctrl(context, ctrl[0], ctrl[1], len(buf))
+            await _update_doi_ctrl(context, ctrl[0], ctrl[1], len(buf), _doi_status_lines(access, len(buf)))
 
-        # پیام جداگانه لازم نیست؛ لاگ برای دیباگ
         logger.debug("auto_doi_add | uid=%s doi=%s", update.effective_user.id, doi)
-        return  # 👈 هیچ پیام دیگری نفرست
-
-    # --- ۲) متن نامرتبط → یادآوری ساده
+        return
+# --- ۲) متن نامرتبط → یادآوری ساده
     await send_main_menu_message(update, context)
 
 
@@ -3142,10 +3502,17 @@ async def on_payment_approve(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if plan_type:
         summary = _activate_plan(int(rec.get("user_id") or 0), plan_type)
         quota_add = summary.get("quota_add") or 0
-        quota_line = f"\n• سهمیه فعال‌شده: {quota_add}" if quota_add else ""
+        if summary.get("doi_unlimited"):
+            daily_limit = int(summary.get("daily_limit") or 0)
+            if daily_limit > 0:
+                quota_line = f"\n? ????? ????????: ??????? (?????? {daily_limit} ?? ???)"
+            else:
+                quota_line = "\n? ????? ????????: ???????"
+        else:
+            quota_line = f"\n? ????? ????????: {quota_add}" if quota_add else ""
         text = (
-            "✅ پرداخت شما تایید شد و اشتراک فعال گردید.\n"
-            f"• پلن: {summary.get('label')}{quota_line}"
+            "? ?????? ??? ????? ?? ? ?????? ???? ?????.\n"
+            f"? ???: {summary.get('label')}{quota_line}"
         )
         with contextlib.suppress(Exception):
             await context.bot.send_message(int(rec.get("chat_id") or 0), text, reply_markup=back_to_menu_kb())

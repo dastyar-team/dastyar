@@ -4,6 +4,7 @@ from __future__ import annotations
 import html as htmlmod
 import logging
 import re
+from datetime import datetime
 from typing import Any, Dict, Optional, Tuple
 
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
@@ -44,6 +45,15 @@ def get_user_status(user_id: int) -> Dict[str, Any]:
     return {
         "email": user.get("email"),
         "email_verified": bool(user.get("email_verified")),
+        "plan_type": user.get("plan_type"),
+        "plan_label": user.get("plan_label"),
+        "plan_status": user.get("plan_status"),
+        "plan_expires_at": int(user.get("plan_expires_at") or 0),
+        "doi_quota_limit": int(user.get("doi_quota_limit") or 0),
+        "doi_quota_used": int(user.get("doi_quota_used") or 0),
+        "doi_daily_limit": int(user.get("doi_daily_limit") or 0),
+        "doi_daily_used": int(user.get("doi_daily_used") or 0),
+        "doi_daily_day": int(user.get("doi_daily_day") or 0),
     }
 
 
@@ -83,6 +93,25 @@ def _set_ui_active(context: ContextTypes.DEFAULT_TYPE, active: bool) -> None:
         data.pop("active", None)
 
 
+def _today_key() -> int:
+    return int(datetime.now().strftime("%Y%m%d"))
+
+
+def _format_expiry_date(ts: int) -> str:
+    if not ts:
+        return "?"
+    return datetime.fromtimestamp(int(ts)).strftime("%Y/%m/%d")
+
+
+def _remaining_days(ts: int) -> int:
+    if not ts:
+        return 0
+    now = int(datetime.now().timestamp())
+    if ts <= now:
+        return 0
+    return int((ts - now + 86399) // 86400)
+
+
 def _card(title: str, lines: list[str], hints: list[str]) -> str:
     body = "\n".join(lines)
     hint = "\n".join(hints)
@@ -94,14 +123,50 @@ def _card(title: str, lines: list[str], hints: list[str]) -> str:
 def _profile_card(status: Dict[str, Any]) -> str:
     email = status.get("email")
     verified = bool(status.get("email_verified"))
-    email_line = f"{htmlmod.escape(email)}" if email else "—"
-    status_line = "تایید شده ✅" if verified else "تایید نشده ⚠️"
+    email_line = f"{htmlmod.escape(email)}" if email else "?"
+    status_line = "????? ??? ?" if verified else "????? ???? ??"
+
     lines = [
-        f"• ایمیل: {email_line}",
-        f"• وضعیت: {status_line}",
+        f"? ?????: {email_line}",
+        f"? ????? ?????: {status_line}",
     ]
-    hints = ["برای مدیریت ایمیل، از دکمه‌های زیر استفاده کنید."]
-    return _card("👤 <b>پروفایل</b>", lines, hints)
+
+    plan_type = status.get("plan_type")
+    plan_label = status.get("plan_label") or "?"
+    plan_status = status.get("plan_status") or "?"
+    display_status = plan_status
+    if expires_at and _remaining_days(expires_at) == 0 and plan_status == "????":
+        display_status = "?????"
+    expires_at = int(status.get("plan_expires_at") or 0)
+
+    if plan_type:
+        lines.append(f"? ?????? ????: {htmlmod.escape(str(plan_label))}")
+        lines.append(f"? ????? ??????: {htmlmod.escape(str(display_status))}")
+        if expires_at:
+            days_left = _remaining_days(expires_at)
+            lines.append(f"? ?????? ??: {_format_expiry_date(expires_at)} | ???? ?????: {days_left} ???")
+
+        limit = int(status.get("doi_quota_limit") or 0)
+        used = int(status.get("doi_quota_used") or 0)
+        if limit > 0:
+            remaining = max(0, limit - used)
+            lines.append(f"? ????? DOI: {remaining} ?? {limit}")
+
+        daily_limit = int(status.get("doi_daily_limit") or 0)
+        if daily_limit > 0:
+            daily_used = int(status.get("doi_daily_used") or 0)
+            day_key = int(status.get("doi_daily_day") or 0)
+            if day_key != _today_key():
+                daily_used = 0
+            daily_remaining = max(0, daily_limit - daily_used)
+            lines.append(f"? ????? ?????: {daily_remaining} ?? {daily_limit}")
+    else:
+        lines.append("? ?????? ????: ?????")
+
+    hints = [
+        "?? ???? ????? ?????? ????? ?? ?? ????? ????.",
+    ]
+    return _card("?? <b>???? ??????</b>", lines, hints)
 
 
 def _email_entry_card(current_email: Optional[str]) -> str:
