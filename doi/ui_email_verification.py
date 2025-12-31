@@ -123,34 +123,34 @@ def _card(title: str, lines: list[str], hints: list[str]) -> str:
 def _profile_card(status: Dict[str, Any]) -> str:
     email = status.get("email")
     verified = bool(status.get("email_verified"))
-    email_line = f"{htmlmod.escape(email)}" if email else "?"
-    status_line = "????? ??? ?" if verified else "????? ???? ??"
+    email_line = f"{htmlmod.escape(email)}" if email else "—"
+    status_line = "تایید شده ✅" if verified else "تایید نشده ❌"
 
     lines = [
-        f"? ?????: {email_line}",
-        f"? ????? ?????: {status_line}",
+        f"• ایمیل: {email_line}",
+        f"• وضعیت ایمیل: {status_line}",
     ]
 
     plan_type = status.get("plan_type")
-    plan_label = status.get("plan_label") or "?"
-    plan_status = status.get("plan_status") or "?"
-    display_status = plan_status
-    if expires_at and _remaining_days(expires_at) == 0 and plan_status == "????":
-        display_status = "?????"
+    plan_label = status.get("plan_label") or "—"
+    plan_status = status.get("plan_status") or "—"
     expires_at = int(status.get("plan_expires_at") or 0)
+    display_status = plan_status
+    if expires_at and _remaining_days(expires_at) == 0 and plan_status == "فعال":
+        display_status = "منقضی"
 
     if plan_type:
-        lines.append(f"? ?????? ????: {htmlmod.escape(str(plan_label))}")
-        lines.append(f"? ????? ??????: {htmlmod.escape(str(display_status))}")
+        lines.append(f"• اشتراک فعال: {htmlmod.escape(str(plan_label))}")
+        lines.append(f"• وضعیت اشتراک: {htmlmod.escape(str(display_status))}")
         if expires_at:
             days_left = _remaining_days(expires_at)
-            lines.append(f"? ?????? ??: {_format_expiry_date(expires_at)} | ???? ?????: {days_left} ???")
+            lines.append(f"• تاریخ انقضا: {_format_expiry_date(expires_at)} | روزهای باقی مانده: {days_left} روز")
 
         limit = int(status.get("doi_quota_limit") or 0)
         used = int(status.get("doi_quota_used") or 0)
         if limit > 0:
             remaining = max(0, limit - used)
-            lines.append(f"? ????? DOI: {remaining} ?? {limit}")
+            lines.append(f"• سهمیه DOI: {remaining} از {limit}")
 
         daily_limit = int(status.get("doi_daily_limit") or 0)
         if daily_limit > 0:
@@ -159,14 +159,14 @@ def _profile_card(status: Dict[str, Any]) -> str:
             if day_key != _today_key():
                 daily_used = 0
             daily_remaining = max(0, daily_limit - daily_used)
-            lines.append(f"? ????? ?????: {daily_remaining} ?? {daily_limit}")
+            lines.append(f"• سهمیه امروز: {daily_remaining} از {daily_limit}")
     else:
-        lines.append("? ?????? ????: ?????")
+        lines.append("• اشتراک فعال: ندارد")
 
     hints = [
-        "?? ???? ????? ?????? ????? ?? ?? ????? ????.",
+        "برای فعال سازی اشتراک، از منوی خرید استفاده کنید.",
     ]
-    return _card("?? <b>???? ??????</b>", lines, hints)
+    return _card("👤 <b>حساب کاربری</b>", lines, hints)
 
 
 def _email_entry_card(current_email: Optional[str]) -> str:
