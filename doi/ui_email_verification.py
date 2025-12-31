@@ -33,6 +33,7 @@ CB_EMAIL_CHANGE = "email:change"
 CB_EMAIL_RESEND = "email:resend"
 CB_EMAIL_BACK = "email:back"
 CB_EMAIL_COOLDOWN = "email:cooldown"
+CB_PLAN_CONTINUE = "plan:continue"
 
 WAITING_EMAIL: int = 1
 WAITING_CODE: int = 2
@@ -45,6 +46,7 @@ def get_user_status(user_id: int) -> Dict[str, Any]:
     return {
         "email": user.get("email"),
         "email_verified": bool(user.get("email_verified")),
+        "wallet_balance": int(user.get("wallet_balance") or 0),
         "plan_type": user.get("plan_type"),
         "plan_label": user.get("plan_label"),
         "plan_status": user.get("plan_status"),
@@ -126,9 +128,12 @@ def _profile_card(status: Dict[str, Any]) -> str:
     email_line = f"{htmlmod.escape(email)}" if email else "—"
     status_line = "تایید شده ✅" if verified else "تایید نشده ❌"
 
+    wallet_balance = int(status.get("wallet_balance") or 0)
+    wallet_text = f"{wallet_balance:,}".replace(",", "٬")
     lines = [
         f"• ایمیل: {email_line}",
         f"• وضعیت ایمیل: {status_line}",
+        f"• موجودی کیف پول: {wallet_text} تومان",
     ]
 
     plan_type = status.get("plan_type")
@@ -410,7 +415,13 @@ async def receive_code(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         context.user_data.pop("pending_email", None)
         _set_ui_active(context, False)
         text = _result_card(True, "ایمیل با موفقیت تایید شد.", email=email)
-        kb = InlineKeyboardMarkup([[InlineKeyboardButton("🏠 برگشت به منو", callback_data=CB_MENU_ROOT)]])
+        if context.user_data.get("resume_plan_after_email"):
+            kb = InlineKeyboardMarkup([
+                [InlineKeyboardButton("ادامه روند پرداخت", callback_data=CB_PLAN_CONTINUE)],
+                [InlineKeyboardButton("↩️ بازگشت به منوی اصلی", callback_data=CB_MENU_ROOT)],
+            ])
+        else:
+            kb = InlineKeyboardMarkup([[InlineKeyboardButton("↩️ بازگشت به منوی اصلی", callback_data=CB_MENU_ROOT)]])
         await _send_new(update, context, text, kb)
         return ConversationHandler.END
 
@@ -437,7 +448,13 @@ async def receive_code(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     if err == "already_verified":
         _set_ui_active(context, False)
         text = _result_card(True, "ایمیل قبلاً تایید شده است.", email=email)
-        kb = InlineKeyboardMarkup([[InlineKeyboardButton("🏠 برگشت به منو", callback_data=CB_MENU_ROOT)]])
+        if context.user_data.get("resume_plan_after_email"):
+            kb = InlineKeyboardMarkup([
+                [InlineKeyboardButton("ادامه روند پرداخت", callback_data=CB_PLAN_CONTINUE)],
+                [InlineKeyboardButton("↩️ بازگشت به منوی اصلی", callback_data=CB_MENU_ROOT)],
+            ])
+        else:
+            kb = InlineKeyboardMarkup([[InlineKeyboardButton("↩️ بازگشت به منوی اصلی", callback_data=CB_MENU_ROOT)]])
         await _send_new(update, context, text, kb)
         return ConversationHandler.END
 

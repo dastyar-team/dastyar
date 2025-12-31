@@ -53,7 +53,11 @@ from downloadmain import (  # noqa: F401  # type: ignore
 )
 from downloaders.sciencedirect import warmup_accounts
 from telegram.request import HTTPXRequest
-from doi.ui_email_verification import build_email_verification_conversation, show_profile_card
+from doi.ui_email_verification import (
+    build_email_verification_conversation,
+    show_profile_card,
+    CB_PLAN_CONTINUE,
+)
 # Sci-Net automation
 try:
     from scinet import (
@@ -83,7 +87,16 @@ except Exception:
 # =========================
 # ثابت‌های UI / CallbackData
 # =========================
-WELCOME_TEXT: Final[str] = "👋 به ربات doi خوش اومدید"
+WELCOME_TEXT: Final[str] = (
+    "👋 به ربات DOI خوش اومدید.\n"
+    "اینجا می‌تونید با DOI مقاله‌ها رو دریافت کنید، اشتراک بخرید و چک پلاجیاریسم انجام بدید.\n\n"
+    "راهنمای دکمه‌ها:\n"
+    "• ارسال DOI: ثبت DOI برای دریافت فایل\n"
+    "• چک پلاجیاریسم: ارسال فایل/متن برای بررسی\n"
+    "• خرید اشتراک: انتخاب و خرید پلن\n"
+    "• شارژ کیف پول: افزایش موجودی کیف پول\n"
+    "• حساب کاربری: وضعیت اشتراک و اطلاعات شما"
+)
 
 # --- کاربر عادی
 CB_MENU_SEND_DOI   = "menu:send_doi"
@@ -114,6 +127,8 @@ CB_STORE_SET_GROUP      = "store:set_group"
 
 CB_PAYMENT_APPROVE_PREFIX = "pay:approve:"
 CB_PAYMENT_REJECT_PREFIX  = "pay:reject:"
+CB_PAYMENT_CANCEL_PREFIX  = "pay:cancel:"
+CB_PAYMENT_DONE           = "pay:done"
 CB_BACK_ADMIN_ROOT = "admin:back_root"   # بازگشت از زیرمنوها
 
 # --- زیرمنوی لینک‌ها
@@ -576,14 +591,15 @@ def _format_card_number(card: str) -> str:
 # -- کاربر عادی
 def main_menu_kb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("📎 ارسال doi", callback_data=CB_MENU_SEND_DOI)],
-        [InlineKeyboardButton("👤 حساب کاربری", callback_data=CB_MENU_ACCOUNT)],
-        [InlineKeyboardButton("🧪 چک پلاژياریسم و AI", callback_data=CB_MENU_PLAGIARISM)],
-        [InlineKeyboardButton("💳 خرید اشتراک", callback_data=CB_MENU_TOPUP)],
-        [InlineKeyboardButton("💰 شارژ کیف پول", callback_data=CB_MENU_WALLET_TOPUP)],
+        [InlineKeyboardButton("📥 ارسال DOI", callback_data=CB_MENU_SEND_DOI)],
+        [InlineKeyboardButton("🔎 چک پلاژیاریسم و AI", callback_data=CB_MENU_PLAGIARISM)],
+        [InlineKeyboardButton("🧾 خرید اشتراک", callback_data=CB_MENU_TOPUP)],
+        [
+            InlineKeyboardButton("👤 حساب کاربری", callback_data=CB_MENU_ACCOUNT),
+            InlineKeyboardButton("💳 شارژ کیف پول", callback_data=CB_MENU_WALLET_TOPUP),
+        ],
     ])
 
-# -- پنل ادمین
 def plagiarism_menu_kb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("چک پلاژياریسم", callback_data=CB_PLAGIARISM_ONLY)],
@@ -627,6 +643,17 @@ def payment_review_kb(payment_id: int) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("✅ تایید پرداخت", callback_data=f"{CB_PAYMENT_APPROVE_PREFIX}{payment_id}")],
         [InlineKeyboardButton("❌ رد پرداخت", callback_data=f"{CB_PAYMENT_REJECT_PREFIX}{payment_id}")],
+    ])
+
+def payment_review_done_kb(label: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton(label, callback_data=CB_PAYMENT_DONE)],
+    ])
+
+def payment_cancel_kb(payment_id: int) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("❌ لغو پرداخت", callback_data=f"{CB_PAYMENT_CANCEL_PREFIX}{payment_id}")],
+        [InlineKeyboardButton("↩️ بازگشت به منوی اصلی", callback_data=CB_MENU_ROOT)],
     ])
 
 def links_root_kb() -> InlineKeyboardMarkup:
@@ -2114,6 +2141,7 @@ async def on_select_premium_3m(update: Update, context: ContextTypes.DEFAULT_TYP
 
 async def on_confirm_plan(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     q = update.callback_query; await q.answer()
+    context.user_data.pop("resume_plan_after_email", None)
     uid = update.effective_user.id
     pending = context.user_data.get("pending_plan")
     if not pending:
@@ -2121,6 +2149,7 @@ async def on_confirm_plan(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         return
     user = db_get_user(uid)
     if not user.get("delivery_chosen"):
+        context.user_data["resume_plan_after_email"] = True
         warn = ("⚠️ ابتدا «روش ارسال» خود را مشخص کنید.\n"
                 "از منوی حساب کاربری می‌توانید «ارسال در ربات» یا «ارسال از طریق ایمیل» را انتخاب کنید.\n"
                 "در پلن معمولی، انتخاب ایمیل شامل هزینهٔ اضافه می‌شود.")
@@ -2137,6 +2166,10 @@ async def on_confirm_plan(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             f"• قیمت: {price_str}{extra_line}\n"
             "برای پرداخت یکی از گزینه‌های زیر را انتخاب کنید:")
     await q.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=plan_payment_kb(pending["type"]))
+
+
+async def on_plan_continue(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    return await on_confirm_plan(update, context)
 
 
 async def on_plan_pay(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -2850,6 +2883,8 @@ def build_app() -> Application:
     app.add_handler(CallbackQueryHandler(on_plagiarism_product, pattern=r"^plag:(only|ai)$"))
     app.add_handler(CallbackQueryHandler(on_payment_approve, pattern=r"^pay:approve:\d+$"))
     app.add_handler(CallbackQueryHandler(on_payment_reject, pattern=r"^pay:reject:\d+$"))
+    app.add_handler(CallbackQueryHandler(on_payment_cancel, pattern=r"^pay:cancel:\d+$"))
+    app.add_handler(CallbackQueryHandler(on_payment_done, pattern=f"^{CB_PAYMENT_DONE}$"))
     app.add_handler(CallbackQueryHandler(on_menu_store, pattern=f"^{CB_ADMIN_STORE}$"))
 
 
@@ -2868,6 +2903,7 @@ def build_app() -> Application:
     app.add_handler(CallbackQueryHandler(on_select_premium_1m, pattern=f"^{CB_PREMIUM_1M}$"))
     app.add_handler(CallbackQueryHandler(on_select_premium_3m, pattern=f"^{CB_PREMIUM_3M}$"))
     app.add_handler(CallbackQueryHandler(on_confirm_plan, pattern=f"^{CB_CONFIRM}$"))
+    app.add_handler(CallbackQueryHandler(on_plan_continue, pattern=f"^{CB_PLAN_CONTINUE}$"))
     app.add_handler(CallbackQueryHandler(on_back, pattern=f"^{CB_BACK}$"))
     app.add_handler(CallbackQueryHandler(on_back_root, pattern=f"^{CB_BACK_ROOT}$"))
     app.add_handler(CallbackQueryHandler(on_menu_root, pattern=f"^{CB_MENU_ROOT}$"))
@@ -2971,6 +3007,9 @@ async def _handle_open_payment_request(
     open_req = db_get_open_payment_request(int(user_id))
     if not open_req:
         return None
+    open_product = (open_req.get("product_key") or "").strip()
+    if open_product and open_product != fallback_product_key:
+        return None
     status = open_req.get("status")
     label = _product_label(open_req.get("product_key") or fallback_product_key)
     chat_id = update.effective_chat.id
@@ -2996,7 +3035,12 @@ async def _handle_open_payment_request(
             total_amount=total_amount_val,
             wallet_used=wallet_used,
         )
-        await context.bot.send_message(chat_id, text, parse_mode=ParseMode.HTML)
+        await context.bot.send_message(
+            chat_id,
+            text,
+            parse_mode=ParseMode.HTML,
+            reply_markup=payment_cancel_kb(payment_id),
+        )
         return WAITING_PAYMENT_RECEIPT
     return ConversationHandler.END
 
@@ -3068,7 +3112,12 @@ async def _start_manual_payment(
         total_amount=total_amount if total_amount is not None else int(amount),
         wallet_used=int(wallet_used or 0),
     )
-    await context.bot.send_message(chat_id, text, parse_mode=ParseMode.HTML)
+    await context.bot.send_message(
+        chat_id,
+        text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=payment_cancel_kb(payment_id),
+    )
     return WAITING_PAYMENT_RECEIPT
 
 
@@ -3422,6 +3471,7 @@ async def receive_payment_receipt(update: Update, context: ContextTypes.DEFAULT_
 
     await update.message.reply_text(
         f"✅ رسید دریافت شد و در حال بررسی است.\nکد پرداخت: {rec.get('payment_code','—')}",
+        reply_markup=back_to_menu_kb(),
     )
     context.user_data.pop(PENDING_PAYMENT_KEY, None)
     context.user_data.pop(PENDING_PAYMENT_PRODUCT_KEY, None)
@@ -3432,6 +3482,49 @@ async def receive_payment_receipt_invalid(update: Update, context: ContextTypes.
     if update.message:
         await update.message.reply_text("لطفاً فقط تصویر رسید را ارسال کنید.")
     return WAITING_PAYMENT_RECEIPT
+
+
+async def on_payment_done(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    q = update.callback_query
+    if not q:
+        return
+    await q.answer("این پرداخت قبلاً بررسی شده است.", show_alert=False)
+
+
+async def on_payment_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    q = update.callback_query
+    if not q:
+        return
+    await q.answer()
+
+    data = q.data or ""
+    payment_id = int(data.split(":")[-1]) if data.startswith(CB_PAYMENT_CANCEL_PREFIX) else 0
+    if not payment_id:
+        return
+
+    rec = db_get_payment_request(payment_id)
+    if not rec:
+        await q.answer("پرداخت یافت نشد.", show_alert=True)
+        return
+
+    status = rec.get("status")
+    if status == PAYMENT_STATUS_PENDING:
+        await q.answer("رسید شما ثبت شده و در حال بررسی است.", show_alert=True)
+        return
+    if status == PAYMENT_STATUS_APPROVED:
+        await q.answer("پرداخت قبلاً تایید شده است.", show_alert=True)
+        return
+    if status == PAYMENT_STATUS_REJECTED:
+        await q.answer("پرداخت قبلاً رد شده است.", show_alert=True)
+        return
+    if status != PAYMENT_STATUS_AWAITING:
+        await q.answer("وضعیت پرداخت نامعتبر است.", show_alert=True)
+        return
+
+    db_set_payment_status(payment_id, "cancelled")
+    context.user_data.pop(PENDING_PAYMENT_KEY, None)
+    context.user_data.pop(PENDING_PAYMENT_PRODUCT_KEY, None)
+    await q.edit_message_text("پرداخت لغو شد.", reply_markup=back_to_menu_kb())
 
 
 async def on_payment_approve(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -3465,10 +3558,8 @@ async def on_payment_approve(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
 
     db_set_payment_status(payment_id, PAYMENT_STATUS_APPROVED, admin_id=q.from_user.id if q.from_user else None)
-    try:
-        await q.edit_message_reply_markup(reply_markup=None)
-    except Exception:
-        pass
+    with contextlib.suppress(Exception):
+        await q.edit_message_reply_markup(reply_markup=payment_review_done_kb("✅ تایید شد"))
 
     product_key = rec.get("product_key") or ""
     plan_type = _plan_type_from_product_key(product_key)
