@@ -196,6 +196,13 @@ The download bot runs alongside the main bot by default; ensure `DOWNLOAD_BOT_TO
 - If Groq is disabled, set `GROQ_API_KEY`.
 - If API is unreachable, check `API_HOST`, `API_PORT`, and Docker port mappings.
 
+cd /opt/dastyar
+
+# 1) آخرین تغییرات رو بگیر
+git pull
+docker compose build --no-cache
+docker compose up -d --force-recreate
+
 ## Contributing
 1) Fork the repo and create a feature branch.
 2) Make changes and add tests where needed.
