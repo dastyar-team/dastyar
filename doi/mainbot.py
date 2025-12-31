@@ -568,9 +568,7 @@ def _get_store_group_id() -> int:
 
 def _format_card_number(card: str) -> str:
     digits = re.sub(r"\D", "", card or "")
-    if len(digits) == 16:
-        return "-".join(digits[i:i+4] for i in range(0, 16, 4))
-    return card
+    return digits or card
 
 # =========================
 # Keyboards
@@ -914,7 +912,7 @@ def _store_status_text() -> str:
         "🛒 <b>فروشگاه</b>\n"
         f"• قیمت چک پلاژياریسم: {price_plag_text}\n"
         f"• قیمت چک پلاژياریسم و AI: {price_ai_text}\n"
-        f"• شماره کارت: <code>{htmlmod.escape(card_display)}</code>\n"
+        f"• شماره کارت:\n<code>{htmlmod.escape(card_display)}</code>\n"
         f"• گروه بررسی پرداخت: <code>{htmlmod.escape(group_display)}</code>\n"
     )
 
@@ -2946,15 +2944,15 @@ def _build_payment_instruction_text(
             f"پرداخت از کیف پول: {wallet_display}\n"
             f"مبلغ قابل پرداخت: {amount_display}\n"
         )
-        pay_line = f"برای تکمیل خرید لطفا مبلغ باقی‌مانده {amount_display} را به شماره کارت {card_display} زیر پرداخت کنید و سپس تصویر رسید خود را ارسال کنید."
+        pay_line = f"برای تکمیل خرید لطفا مبلغ باقی‌مانده {amount_display} را به شماره کارت زیر پرداخت کنید و سپس تصویر رسید خود را ارسال کنید."
     else:
         price_lines = f"مبلغ: {amount_display}\n"
-        pay_line = f"برای خرید این محصول لطفا مبلغ {amount_display} را به شماره کارت {card_display} زیر پرداخت کنید و سپس تصویر رسید خود را ارسال کنید."
+        pay_line = f"برای خرید این محصول لطفا مبلغ {amount_display} را به شماره کارت زیر پرداخت کنید و سپس تصویر رسید خود را ارسال کنید."
     return (
         "🧾 <b>راهنمای پرداخت</b>\n"
         f"محصول: {htmlmod.escape(product_label)}\n"
         f"{price_lines}"
-        f"شماره کارت: <code>{htmlmod.escape(card_display)}</code>\n"
+        f"شماره کارت:\n<code>{htmlmod.escape(card_display)}</code>\n"
         f"شماره پرداخت: <code>{payment_id}</code>\n"
         f"کد پرداخت: <code>{htmlmod.escape(payment_code)}</code>\n\n"
         f"{pay_line}"
@@ -3394,7 +3392,7 @@ async def receive_payment_receipt(update: Update, context: ContextTypes.DEFAULT_
         f"کد پرداخت: {rec.get('payment_code','—')}\n"
         f"محصول: {product_label}\n"
         f"{amount_lines}"
-        f"شماره کارت: {card_display}\n"
+        f"شماره کارت:\n{card_display}\n"
         f"کاربر: {full_name} {username}\n"
         f"شناسه کاربر: {rec.get('user_id','—')}\n"
         f"چت کاربر: {rec.get('chat_id','—')}"
