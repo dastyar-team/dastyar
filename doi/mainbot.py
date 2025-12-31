@@ -1763,7 +1763,8 @@ async def on_download_link_done(update: Update, context: ContextTypes.DEFAULT_TY
     if not q:
         return
     await q.answer()
-    await send_main_menu_message(update, context)
+    with contextlib.suppress(Exception):
+        await q.edit_message_reply_markup(reply_markup=back_to_menu_kb())
 
 
 async def send_account_view_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -2430,11 +2431,10 @@ async def finish_doi(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     if update.message:
-        await update.message.reply_text("عملیات لغو شد. ✅", reply_markup=ReplyKeyboardRemove())
+        await update.message.reply_text("عملیات لغو شد. ✅", reply_markup=back_to_menu_kb())
     context.user_data["doi_buffer"] = []; context.user_data.pop("doi_ctrl", None)
     context.user_data.pop("pending_email", None)
     context.user_data.pop("charge", None)
-    await show_main_menu(update, context, edit=False)
     return ConversationHandler.END
 
 # ---- بازگشت‌ها و متفرقه
@@ -2525,7 +2525,7 @@ async def fallback_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         logger.debug("auto_doi_add | uid=%s doi=%s", update.effective_user.id, doi)
         return
 # --- ۲) متن نامرتبط → یادآوری ساده
-    await send_main_menu_message(update, context)
+    return
 
 
 
